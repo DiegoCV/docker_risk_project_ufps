@@ -1,0 +1,382 @@
+{% extends "procesos/plantilla_procesos.html" %}
+
+{% block title %} Proyecto {% endblock %}
+
+{% load static %}
+
+{% block organigrama_up %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="content-wrapper">
+  <div class="container">
+    <section class="content-header"  style="margin-top: 70px;">
+      <h1>
+        {% if proyecto %}
+        {{ proyecto.proyecto_nombre }}
+        {% endif %}
+        <small>Cierre del proyecto</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-folder-open"></i> Proyecto</a></li>
+        <li class="active">Cierre del Proyecto</li>
+      </ol>
+      {% if mensaje %}
+      <div class="callout callout-info">
+        <h4>Registro Exitoso</h4>
+        {{mensaje}}      
+      </div>
+      {% endif %}
+      {% if mensaje_eliminar %}
+      <div class="callout callout-danger">
+        <h4>Atención</h4>
+          {{mensaje_eliminar}}      
+      </div>
+      {% endif %}
+      {% if mensaje_editar %}
+      <div class="callout callout-warning">
+        <h4>Cuidado</h4>
+        {{mensaje_editar}}      
+      </div>
+      {% endif %}
+    </section>
+    <section class="content">
+
+      <div class="box">
+        <div class="box-group" id="accordion">
+          <div class="panel box box-primary">
+            <div class="box-header with-border">
+             <h4 class="box-title">
+               <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" style="color:#444444";>
+                <label data-toggle="tooltip" data-placement="top" title="Información del proceso."><strong>Cierre del Proyecto: {{ proyecto.proyecto_nombre }}  
+                 <i class="fa fa-sort-desc"></i>
+               </strong></label>
+             </a>
+           </h4>
+         </div>
+         <div id="collapseThree" class="panel-collapse collapse in">
+          <div class="box-body">
+            El Cierre del Proyecto consiste en el proceso final del Ciclo de Vida de la gestión de riesgos donde se busca finalizar el trabajo definido en el Plan de gestión de riesgos en donde se busca acordar que todas las tareas planeadas para los riesgos se llevaron a cabo o por el contrario el riesgo nunca se manifestó. 
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if proyecto.proyecto_linea_base != 0 %}  
+  <div class="box box-primary">
+    <div class="box-header">
+      <label data-toggle="tooltip" data-placement="top" title="En esta sección podrá administrar su equipo de gestión de riesgos."><h3 class="box-title"><strong>Lecciones Aprendidas del Proyecto: {{ proyecto.proyecto_nombre }}&nbsp  &nbsp</strong></h3></label>
+      {% if proyecto.proyecto_fin_status %}
+      <button type="button" class="btn btn-primary pull-right" data-toggle="modal"  data-target="#modal-agregar" disabled="true" >Nueva Lección Aprendida</i>
+      </button>
+      {% else %}
+      <button type="button" class="btn btn-primary pull-right" data-toggle="modal"  data-target="#modal-agregar" >Nueva Lección Aprendida</i>
+      </button>
+      {% endif %}
+
+
+    </div>      
+    <!-- /.box-header -->
+    <div class="box-body">
+      <table id="example1" class="table table-bordered table-striped">
+        <thead>
+          <tr>                    
+            <th>Lección Aprendida</th>                  
+            <th>Acciones</th>                                       
+          </tr>
+        </thead>
+        <tbody>
+          {% if lista_lecciones %}
+          {% for leccion in lista_lecciones %}
+          <tr>                  
+            <td>{{ leccion.leccion_descripcion }}</td>                  
+            <td>
+              {% if proyecto.proyecto_fin_status %}
+              <button type="button" class="btn btn-default" data-toggle="modal-editar" onclick="abrir_modal_editar('{{ leccion.leccion_id }}', '{{ leccion.leccion_descripcion }}')" data-target="#modal-editar" disabled="true"><i   class="fa fa-edit"></i>
+              </button>
+
+
+              <button type="button" class="btn btn-danger" data-toggle="#modal_eliminar" onclick="abrir_modal_eliminar('{{ leccion.leccion_id }}')" data-target="#modal_eliminar" disabled="true"><i class="fa fa-trash-o danger"></i>
+              </button>
+              {% else %}
+              <button type="button" class="btn btn-default" data-toggle="modal-editar" onclick="abrir_modal_editar('{{ leccion.leccion_id }}', '{{ leccion.leccion_descripcion }}')" data-target="#modal-editar" ><i   class="fa fa-edit"></i>
+              </button>
+
+
+              <button type="button" class="btn btn-danger" data-toggle="#modal_eliminar" onclick="abrir_modal_eliminar('{{ leccion.leccion_id }}')" data-target="#modal_eliminar"><i class="fa fa-trash-o danger"></i>
+              </button>
+              {% endif %}  
+
+              
+            </td>
+          </tr>
+          {% endfor %}
+          {% else %}
+          <tr>
+            <td>Aun no cuentas con lecciones aprendidas asociadas al proyecto.</td>
+            <td></td>
+            <td></td>                  
+          </tr>
+          {% endif %} 
+        </tbody>
+        <tfoot>
+          <tr>                 
+            <th>Lección Aprendida</th>                  
+            <th>Acciones</th>    
+          </tr>
+        </tfoot>
+      </table>
+    </div>    
+  </div>
+
+  <div class="box box-danger">
+    <div class="box-header">
+      <label data-toggle="tooltip" data-placement="top" title="En esta sección podrá administrar su equipo de gestión de riesgos."><h3 class="box-title"><strong>Finalizar proyecto : {{ proyecto.proyecto_nombre }}&nbsp  &nbsp</strong></h3></label>        
+
+
+    </div>      
+    <!-- /.box-header -->
+    <div class="box-body">
+      {% if proyecto.proyecto_fin_status %}
+      <button type="button" class="btn btn-danger pull-right" data-toggle="modal"  data-target="#modal-cerrar" disabled="true">Finalizar Proyecto</i>
+      </button>
+      {% else %}
+      <button type="button" class="btn btn-danger pull-right" data-toggle="modal"  data-target="#modal-cerrar" >Finalizar Proyecto</i>
+      </button>
+      {% endif %}
+
+
+    </div>    
+  </div>
+  {% else %}
+  <div class="box-body">
+    <div class="alert alert-info alert-dismissible">                
+      <h4><i class="icon fa fa-info"></i>Atencion !</h4>
+          No puede cerrar el proyecto hasta que haya definido una <strong> linea Base de la Adiministración de Riesgos</strong><br><br>
+          Para crear una nueva linea base a su proyecto por favor dirigirse a la siguiente pagina: clic 
+          <a href="/mi_proyecto/{{proyecto.proyecto_id}}/planificar_respuestas/">aquí.</a>
+    </div>    
+  </div>
+  
+  {% endif %}
+
+
+
+
+<!-- /.modal-agregar -->
+<div class="modal fade" id="modal-agregar">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Agregar Lección Aprendida al Proyecto</h4>
+        </div>
+        <div class="box-body">
+         <form  action="/mi_proyecto/{{ proyecto.proyecto_id }}/registrar_leccion/" method="post">
+          {% csrf_token %}
+          <div class="row">
+          
+            <div class="col-md-12">
+                           
+              <div class="form-group">
+                <label>Descripción</label>
+                <textarea class="form-control" rows="4" maxlength="254" required id="descripcion_leccion" name="descripcion_leccion"></textarea>
+              </div>                             
+            
+          </div>          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary pull-left" data-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-primary pull-right">Agregar</button>
+          </div>
+          <!-- /.row -->
+        </form>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+
+
+  
+</div>
+<!-- /.modal-eliminar -->
+
+<div class="modal modal-danger fade" id="modal_eliminar" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title"> Eliminar Lección Aprendida </h4>
+        </div>
+        <form  action="/mi_proyecto/{{ proyecto.proyecto_id }}/eliminar_leccion/" method="post">
+          {% csrf_token %}
+          <div class="modal-body">
+
+            <p id="contenido_modal">&hellip;</p>                  
+            <input type="text" class="form-control" id="leccion_id_e" name="leccion_id" style="visibility:hidden">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-outline">Eliminar</button>
+          </div>
+        </form>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<!-- /.modal-cerrar proyecto -->
+
+<div class="modal modal-danger fade" id="modal-cerrar" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title"> Finalizar Proyecto {{ proyecto.proyecto_nombre }} </h4>
+        </div>
+        <form  action="/mi_proyecto/{{ proyecto.proyecto_id }}/cerrar_proyecto/" method="post">
+          {% csrf_token %}
+          <div class="modal-body">
+
+            <p id="contenido_modal">Esta seguro que desea finalizar la gestión de riesgos de este proyecto? Esta acción no se podra reversar, y deshailitara por completo la administración de riesgos del proyecto  {{ proyecto.proyecto_nombre }}.</p>
+
+            {% if tareas_no_iniciadas %}
+            <p>Atención: Aun no se han marcado como completadas las siguientes tareas: <br>
+                (
+                {% for tarea in tareas_no_iniciadas %}
+                {{ tarea.tarea_nombre }},&nbsp
+                {% endfor %} )
+            </p>
+            {% endif %}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-outline">Finalizar Proyecto</button>
+          </div>
+        </form>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+
+  
+</div>
+
+<!-- /.modal-editar -->
+<div class="modal fade" id="modal-editar">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Editar Lección Aprendida</h4>
+        </div>
+        <div class="box-body">
+         <form  action="/mi_proyecto/{{ proyecto.proyecto_id }}/editar_leccion/" method="post">
+          {% csrf_token %}
+          <div class="row">
+          
+            <div class="col-md-12">
+                           
+              <div class="form-group">
+                <label>Descripción</label>
+                <textarea class="form-control" rows="4" maxlength="254" required id="descripcion_leccion_ed" name="descripcion_leccion"></textarea>
+              </div>                             
+            <input type="text" class="form-control" id="leccion_id_ed" name="leccion_id" style="visibility:hidden">
+          </div>          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary pull-left" data-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-primary pull-right">Actualizar</button>
+          </div>
+          <!-- /.row -->
+        </form>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+{% endblock %}
+{% block organigrama_down %}
+<!-- DataTables -->
+<script src="{% static 'risk_project/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'risk_project/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+ <script>
+  $(function () {
+    //$('#example1').DataTable()
+    trasnformar_tabla('example1');
+  })
+</script>
+
+<script>
+  function abrir_modal_eliminar(leccion_id) {
+
+        $("#modal_eliminar").modal('show');
+
+        document.getElementById("contenido_modal").innerHTML = "Estas seguro que desea eliminar esta lección aprendida? Esta acción no se podrá reversar.";
+        document.getElementById("leccion_id_e").value = leccion_id
+        
+        return false;
+    };
+
+function abrir_modal_editar(leccion_id, descripcion) {
+            
+        $("#modal-editar").modal('show');
+        document.getElementById("descripcion_leccion_ed").value = descripcion;
+        document.getElementById("leccion_id_ed").value = leccion_id
+        
+        return false;
+    };
+
+function trasnformar_tabla(id_tabla) {
+  $("#"+id_tabla).DataTable({
+     "language": {
+         "sProcessing":    "Procesando...",
+         "sLengthMenu":    "Mostrar _MENU_ registros",
+         "sZeroRecords":   "No se encontraron resultados",
+         "sEmptyTable":    "Ningún dato disponible en esta tabla",
+         "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+         "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+         "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+         "sInfoPostFix":   "",
+         "sSearch":        "Buscar:",
+         "sUrl":           "",
+         "sInfoThousands":  ",",
+         "sLoadingRecords": "Cargando...",
+         "oPaginate": {
+             "sFirst":    "Primero",
+             "sLast":    "Último",
+             "sNext":    "Siguiente",
+             "sPrevious": "Anterior"
+         },
+         "oAria": {
+             "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+             "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+         }
+     }
+    }); 
+}
+
+</script>
+
+
+{% endblock %}

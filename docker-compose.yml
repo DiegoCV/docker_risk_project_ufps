@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    env_file:
+      - ./.envs/.var_config
+    volumes:
+      - .:/code
+    depends_on:
+      - migration
+    ports:
+      - "8000:8000"
+  migration:
+    build: . 
+    command: python manage.py migrate --noinput
+    env_file:
+      - ./.envs/.var_config
+    volumes:
+      - .:/code

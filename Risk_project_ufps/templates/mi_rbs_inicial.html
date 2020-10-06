@@ -1,0 +1,151 @@
+{% extends "plantilla.html" %}
+
+{% block title %} RiskProject UFPS | Mi RBS {% endblock %}
+
+{% block content %}
+
+<div class="content-wrapper" style="min-height: 1136px;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        EDR
+        <small>(Estructura desglozada de riesgos)</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i>Inicio</a></li>
+        <li><a href="#">EDR</a></li>
+        <li class="active">Administrar</li>
+      </ol>
+    </section>
+
+    <div class="pad margin no-print">
+      <div class="callout callout-info" style="margin-bottom: 0!important;">
+        <h4><i class="fa fa-info"></i> Nota:</h4>
+        Hasta el momento no cuenta con un EDR (Estructura desglozada de riesgos) definida en su historial personal o asociada a ningun proyecto. 
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="invoice">
+      <!-- title row -->
+      <div class="row">
+        <div class="col-xs-12">
+          <h2 class="page-header">
+            <i class="fa fa-globe"></i> Configuración EDR.
+          </h2>
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- info row -->
+      <div class="row invoice-info">
+        <div class="col-sm-4 invoice-col"> 
+          <p>A continuación seleccione alguna de estas opciones:</p>
+        </div>
+      </div>
+      <div class="form-group">        
+        <div class="row invoice-info">
+          <div class="col-sm-4 invoice-col">            
+             <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" id="optionsRadios1" value="1" checked="">                      
+                      <address>
+                        Estructura de desglose generica,<br>
+                        disponible para cualquier tipo de proyecto.<br>
+                        Tomado de: <strong>PMBOK® 6th edición</strong><br>                        
+                      </address>
+                    </label>
+                  </div>            
+          </div>
+          <!-- /.col -->
+          <div class="col-sm-4 invoice-col">
+            <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" id="optionsRadios2" value="2">
+                      <address>
+                        Estructura de desglose sugerida,<br>
+                        se construira una EDR a partir de <strong>proyectos</strong><br>
+                        que se encuentren dentro de su mismo <strong>sector</strong>                       
+                      </address>
+                    </label>
+                  </div>
+            
+          </div>
+          <!-- /.col -->
+          <div class="col-sm-4 invoice-col">
+            <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" id="optionsRadios3" value="3">
+                      <address>
+                        Estructura de desglose en blanco,<br>
+                        sin ningun tipo de informacion<br>        
+                      </address>
+                    </label>
+                  </div>            
+          </div>
+          <!-- /.col -->
+        </div>
+    </div>
+      <!-- /.row -->
+
+      <!-- this row will not appear when printing -->
+      <div class="row no-print">
+        <div class="col-xs-12">    
+          <button type="button" onclick="configurar_edr();" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i> Configurar EDR
+          </button>        
+        </div>
+      </div>
+    </section>
+    <!-- /.content -->
+    <div class="clearfix"></div>
+  </div>
+{% endblock %}
+
+{% block mis_scrtips_riesgos %}
+
+{% load static %}
+
+
+
+<script type="text/javascript">
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+  }
+
+  const csrftoken = getCookie('csrftoken');
+
+  function configurar_edr() {
+    var radioValue = $("input[name='optionsRadios']:checked").val();
+    if(radioValue){
+      $.ajax({
+        type: 'POST',
+        url: "/rbs/configurar/",    
+        headers: {'X-CSRFToken': csrftoken},      
+        data: {"rbs_option":radioValue},
+        success: function(data, status, xhr) {
+          window.location.href = "/mi_rbs/"
+           console.log(xhr);
+        },
+        error: function(jqXhr, textStatus, errorMessage) {
+          alert("ha ocurrido un error");
+          window.location.href = "/mi_rbs/";
+          console.log(errorMessage);
+        }
+      });
+    }    
+  }
+</script>
+
+{% endblock %}

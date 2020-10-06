@@ -1,0 +1,248 @@
+{% extends "plantilla.html" %}
+
+{% block title %} RiskProject UFPS | Mi Perfil {% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+      <h1>
+        Mi Perfil
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Inicio</a></li>
+        <li><a href="#">Mi Perfil</a></li>        
+      </ol>
+      {% if mensaje %}
+    <div class="callout callout-warning">
+      <h4>Registro Exitoso</h4>
+      {{mensaje}}      
+    </div>
+    {% endif %}
+    </section>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="row">
+      <!-- /.Tabla -->
+      <div class="col-md-12">
+          <div class="col-md-3">
+
+          <!-- Profile Image -->
+          <div class="box box-primary">
+            <div class="box-body box-profile" align="center">
+              <svg data-jdenticon-value="{{ user.first_name }}" width="100" height="100" class="img-circle" >
+                  {{ user.first_name }}
+                </svg>
+            
+
+              <h3 class="profile-username text-center">{{ gerente.gerente_nombre }}</h3>
+
+              <p class="text-muted text-center">{{ gerente.gerente_profesion }}</p>
+
+              <p class="text-muted text-center">{{ gerente.gerente_empresa }}</p>
+
+             
+            </div>
+            <!-- /.box-body -->
+          </div>
+          
+        </div>
+
+        <div class="col-md-9">
+          <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#perfil" data-toggle="tab">Perfil</a></li>
+              
+              <li><a href="#editar_perfil" data-toggle="tab">Editar</a></li>
+            </ul>
+            <div class="tab-content">
+              <div class="active tab-pane" id="perfil">
+
+               <form class="form-horizontal">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-2 control-label">Nombre</label>
+
+                    <div class="col-sm-10">
+                      <h5>{{ gerente.gerente_nombre }}</h5>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputEmail" class="col-sm-2 control-label">Usuario</label>
+
+                    <div class="col-sm-10">
+                      <h5>{{ gerente.gerente_usuario }}</h5>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-2 control-label">Correo</label>
+
+                    <div class="col-sm-10">
+                      <h5>{{ gerente.gerente_correo }}</h5>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputExperience" class="col-sm-2 control-label">Profesión</label>
+
+                   <div class="col-sm-10">
+                      <h5>{{ gerente.gerente_profesion }}</h5>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputSkills" class="col-sm-2 control-label">Empresa</label>
+
+                    <div class="col-sm-10">
+                      <h5>{{ gerente.gerente_empresa }}</h5>
+                    </div>
+                  </div> 
+                  <div class="form-group">
+                    <label for="inputSkills" class="col-sm-2 control-label">Sector</label>
+
+                    <div class="col-sm-10">
+                      <h5>{{ gerente.sector.sector_nombre }}</h5>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputSkills" class="col-sm-2 control-label">Fecha de registro</label>
+
+                    <div class="col-sm-10">
+                      <h5>{{ gerente.gerente_fecha_creacion }}</h5>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputSkills" class="col-sm-2 control-label">Metodologia</label>
+
+                    <div class="col-sm-10">
+                      <h5>{{ gerente.gerente_metodologias }}</h5>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputSkills" class="col-sm-2 control-label">Certificación</label>
+
+                    <div class="col-sm-10">
+                      <h5>{{ gerente.gerente_certificaciones }}</h5>
+                    </div>
+                  </div>                  
+                </form>
+
+
+              </div>
+              <div class="tab-pane" id="editar_perfil">
+                <form class="form-horizontal" action="{% url 'mi_perfil' %}" method="post">
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-2 control-label">Nombre</label>
+
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" maxlength="99" id="gerente_nombre" name="gerente_nombre" value="{{ gerente.gerente_nombre }}" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputEmail" class="col-sm-2 control-label">Correo</label>
+
+                    <div class="col-sm-10">
+                      <input type="email" class="form-control" maxlength="99" id="gerente_correo" name="gerente_correo" value="{{ gerente.gerente_correo }}" required>                     
+                    </div>
+                  </div>                  
+                  <div class="form-group">
+                    <label for="inputExperience" class="col-sm-2 control-label">Profesión</label>
+
+                   <div class="col-sm-10">
+                      <input type="text" class="form-control" maxlength="99" id="gerente_profesion" name="gerente_profesion" value="{{ gerente.gerente_profesion }}" required>                      
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputSkills" class="col-sm-2 control-label">Empresa</label>
+
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" maxlength="99" id="gerente_empresa" name="gerente_empresa" value="{{ gerente.gerente_empresa }}" required> 
+                      <h5></h5>
+                    </div>
+                  </div> 
+                  <div class="form-group">
+                    <label for="inputSkills" class="col-sm-2 control-label">Sector</label>
+                    <div class="col-sm-10">
+                     {% if lista_sectores %}
+                     <select class="form-control select2" style="width: 100%;" name="gerente_sector" id="gerente_sector" required>
+                      <option value="{{ gerente.sector.sector_id }}">{{ gerente.sector.sector_nombre }}</option>
+                      {% for sector in lista_sectores %}                      
+                      <option value="{{ sector.sector_id }}">{{ sector.sector_nombre }}</option>                      
+                      {% endfor %} 
+                    </select>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputSkills" class="col-sm-2 control-label">Certificación</label>
+                  <div class="col-sm-10">
+                    <select class="form-control select2" style="width: 100%;" name="certificacion" required>
+                      <option value="" disabled selected>Certificacion obtenida</option>
+                      <option value="PMP">PMP: Project Management Professional</option>
+                      <option value="CAPM">CAPM: Certified Associate in Project Management</option>
+                      <option value="CSM">CSM: Certified ScrumMaster</option>
+                      <option value="PRINCE2">PRINCE2 Foundation/PRINCE2 Practitioner</option>
+                      <option value="CPMP">CPMP: Certified Project Management Practitioner</option>
+                      <option value="MPM">MPM: Master Project Manager</option>
+                      <option value="PPM">PPM: Professional in Project Management</option>
+                      <option value="PMITS">PMITS: Project Management in IT Security</option>
+                      <option value="Ninguna">Ninguna</option>
+                    </select>
+                  </div>
+                </div>    
+                <div class="form-group">
+                  <label for="inputSkills" class="col-sm-2 control-label">Metodologia</label>
+                  <div class="col-sm-10">
+                    <select class="form-control select2" style="width: 100%;" name="metodologia" required>
+                     <option value="" disabled selected>Metodologia usada</option>
+                    <option value="PMBOK®">PMBOK®</option>
+                    <option value="AMPBOK®">AMPBOK®</option>
+                    <option value="ICB®">ICB®</option>
+                    <option value="PMAJ®">PMAJ®</option>
+                    <option value="PRINCE2®">PRINCE2®</option>
+                    <option value="ISO21500®">ISO21500</option>
+                    <option value="BS6079®">BS6079®</option>
+                    <option value="PM CDF®">PM CDF®</option>
+                    <option value="SAQA®">SAQA®</option>
+                    <option value="SCRUM®">SCRUM®</option>
+                    <option value="Ninguna">Ninguna</option>
+                    </select>
+                  </div>
+                </div>             
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10">
+
+                    <label>
+                      <p>Las operaciones realizadas no se podran reversar.</p>
+                    </label>
+
+                  </div>
+                </div>
+                  <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                      <button type="submit" class="btn btn-warning">Actualizar</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <!-- /.tab-pane -->
+            </div>
+            <!-- /.tab-content -->
+          </div>
+          <!-- /.nav-tabs-custom -->
+        </div>
+        <!-- /.col -->
+
+  </div>
+  <!-- /.col -->
+</div>
+<!-- /.row -->
+</section>
+</div>
+
+{% endblock %}
+{% block mis_scrtips_riesgos %}
+{% load static %}
+
+{% endblock %}

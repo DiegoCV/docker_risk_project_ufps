@@ -1,0 +1,102 @@
+{% extends "plantilla.html" %}
+
+{% block title %} RiskProject UFPS | Mis Proyectos {% endblock %}
+
+{% block content %}
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Proyectos
+        <small>Panel de Control</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Inicio</a></li>
+        <li class="active">Proyectos</li>
+      </ol>
+      
+    </section>
+
+   
+
+    <section class="content-header">
+
+     <!-- Sección tarjetas -->
+     {% if lista_proyectos %}
+     <ul class="chart-legend clearfix">               
+       <span class="label label-danger pull-right">Proyectos Finalizados</span>       
+       <span class="label label-info pull-right">Proyectos en Ejecución</span>                 
+     </ul>
+     <br>
+
+     <div class="row">
+      <!-- Tarjeta -->
+
+      {% for proyecto in lista_proyectos %}
+
+
+      <div class="col-lg-3 col-xs-6">
+        {% if proyecto.proyecto_fin_status %}
+        <div class="small-box bg-red">
+        {% else %}
+        <div class="small-box bg-aqua">
+        {% endif %}  
+          <div class="inner">
+            <h2>{{ proyecto.proyecto_nombre}}</h2>
+          </div>
+          <div class="icon">
+            <i class="ion ion-document"></i>
+          </div>
+            {% if proyecto.proyecto_fin_status %}
+            <button type="button"  class="btn btn-block btn-info btn-xs bg-red" style="border-color: #BE4C4C;">
+            {% else %}
+            <button type="button"  class="btn btn-block btn-info btn-xs">
+            {% endif %}  
+            <a href="/mi_proyecto/{{ proyecto.proyecto_id }}/" style="color:#FEFEFE">Gestionar Proyecto
+              <i class="fa fa-arrow-circle-right"></i>
+            </a>
+          </button>
+        </div>
+      </div>
+      {% endfor %} 
+      {% else %}
+
+      <div class="callout callout-danger">
+        <h4>Aun no cuentas con proyectos registrados</h4>
+            
+      </div>
+
+      {% endif %} 
+    </div>    
+  </section>
+</div>
+
+
+  <!-- Termina sección Tarjetas -->
+{% endblock %}
+
+{% block mis_scrtips_riesgos %}
+{% load static %}
+<!-- DataTables -->
+<script src="{% static 'risk_project/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'risk_project/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+<!-- SlimScroll -->
+<script src="{% static 'risk_project/bower_components/jquery-slimscroll/jquery.slimscroll.min.js' %}"></script>
+<!-- FastClick -->
+<script src="{% static 'risk_project/bower_components/fastclick/lib/fastclick.js' %}"></script>
+<script>
+$(function () {
+  $('#example1').DataTable()
+  $('#example2').DataTable({
+    'paging'      : true,
+    'lengthChange': false,
+    'searching'   : false,
+    'ordering'    : true,
+    'info'        : true,
+    'autoWidth'   : false
+  })
+})
+</script>
+{% endblock %}

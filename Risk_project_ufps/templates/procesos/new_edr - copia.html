@@ -1,0 +1,107 @@
+<div class="box-header">
+  <h3 class="box-title">
+    Estructura desglosada de riesgos
+  </h3>         
+</div>
+    <div class="pad margin no-print">
+      <div class="callout callout-info" style="margin-bottom: 0!important;">
+        <h4>Nota:</h4>
+        Hasta el momento no cuenta con una EDR (Estructura desglozada de riesgos) definida para este proyecto. 
+      </div>
+    </div>
+
+<!-- Main content -->
+    <section class="invoice">
+      <!-- title row -->
+      
+      <!-- info row -->
+      <div class="row invoice-info">
+        <div class="col-sm-4 invoice-col"> 
+          <p>A continuación seleccione alguna de estas opciones:</p>
+        </div>
+      </div>
+      <div class="form-group">        
+        <div class="row invoice-info">
+          <!-- /.col -->
+          <div class="col-sm-4 invoice-col">
+            <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" id="optionsRadios1" value="1" checked>                     
+                        Estructura de desglose propia, se construíra una EDR a partir de 
+                        todos los <strong>riesgos</strong>
+                        que esten definidos en su historial.Los <strong>riesgos</strong> se asignaran automaticamente.                                    
+                    </label>
+                  </div>
+            
+          </div>
+          <!-- /.col -->
+          <div class="col-sm-4 invoice-col">
+            <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" id="optionsRadios2" value="2">         
+                        Estructura de desglose sugerida,
+                        se construíra una EDR a partir de <strong>proyectos</strong>
+                        que esten dentro del mismo <strong>sector</strong> al suyo.<br>
+                        Los <strong>riesgos</strong> se asignaran automaticamente.                     
+                    </label>
+                  </div>
+            
+          </div>
+          <!-- /.col -->
+          <div class="col-sm-4 invoice-col">
+            <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" id="optionsRadios3" value="3">
+                      <address>
+                        Estructura de desglose en blanco,<br>
+                        sin ningun tipo de informacion.<br>
+                        Los <strong>riesgos</strong> deberán ser asignados manualmente.        
+                      </address>
+                    </label>
+                  </div>            
+          </div>
+          <!-- /.col -->
+        </div>
+    </div>
+      <!-- /.row -->
+
+      <!-- this row will not appear when printing -->
+      <div class="row no-print">
+        <div class="col-xs-12">    
+          <button type="button" onclick="configurar_edr();" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i> Configurar EDR
+          </button>        
+        </div>
+      </div>
+    </section>
+    <!-- /.content -->
+    <div class="clearfix"></div>
+
+    <div class="box box-default">
+          <div class="box-header with-border">
+            <h3 class="box-title">Nombre Proyecto</h3>
+          </div>
+          <div class="box-body">
+            Aqui deberia ir la información del proyecto.
+          </div>
+          <!-- /.box-body -->
+      </div>
+      <div class="nav-tabs-custom" style="cursor: move;">
+            <!-- Tabs within a box -->
+            <ul class="nav nav-tabs pull-right ui-sortable-handle">
+              <li class="active"><a href="#revenue-chart" data-toggle="tab" aria-expanded="false">Propios</a></li>
+              <li class=""><a href="#sales-chart" data-toggle="tab" aria-expanded="true">Sugeridos</a></li>
+              <li class="pull-left header"><i class="fa fa-inbox"></i>Riesgos</li>
+            </ul>            
+            <div class="tab-content no-padding">
+              <!-- Morris chart - Sales -->
+              <div class="chart tab-pane active" id="revenue-chart" style="height: 300px;">
+                <select class="js-example-basic-single" name="categorias" onchange="set_riesgo(this);"></select>
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default">+</button>
+                <div class="box-body">
+
+             
+          </div>                
+              </div>
+              <div class="chart tab-pane " id="sales-chart" style="position: relative; height: 300px;"></div>
+          </div>
+      </div>

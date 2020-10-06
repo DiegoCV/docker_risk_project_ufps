@@ -1,0 +1,245 @@
+{% extends "plantilla.html" %}
+
+{% block title %} RiskProject UFPS | Registrar Proyecto {% endblock %}
+
+
+{% block content %}
+
+{% load static %}
+
+{% block scripts_actividades_xml %}
+<script type="text/javascript" src="{% static 'risk_project/dist/js/risk_ufps/actividades/risk.js' %}"></script>
+<script type="text/javascript" src="{% static 'risk_project/dist/js/risk_ufps/actividades/util_risk.js' %}"></script>
+<script type="text/javascript" src="{% static 'risk_project/dist/js/risk_ufps/actividades/xml2json.js' %}"></script>
+{% endblock %}
+
+<div class="content-wrapper">
+
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+
+    <h1>
+      Proyectos
+      <small>Nuevo Proyecto</small>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a href="#"><i class="fa fa-dashboard"></i> Proyectos</a></li>
+      <li class="active">Nuevo Proyecto</li>
+    </ol>
+
+    {% if mensaje %}
+    <div class="callout callout-info">
+      <h4>Registro Exitoso</h4>
+      {{mensaje}}
+    </div>
+    {% endif %}
+  </section>
+
+
+
+  <section class="content">
+    <!-- SELECT2 EXAMPLE -->
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Registrar Proyecto</h3>
+
+        
+      </div>
+
+      <!-- /.box-header -->
+
+      <div class="box-body">
+        {% if rbs %}
+        <form role="form" id="form_proyecto" action="{% url 'nuevo_proyecto' %}" method="post">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+
+                <div class="form-group">
+                  <label>Nombre</label>
+                  <input type="text" maxlength="100" class="form-control" placeholder="Ingrese Nombre del Proyecto" name="proyecto_nombre" required>
+                </div>
+                <div class="form-group">
+                  <label>Presupuesto para riesgos</label>
+                  <input type="number" class="form-control" placeholder="Ingrese un valor de presupuesto estimado" name="proyecto_presupuesto" step="any" required>
+                </div>
+
+                <div class="form-group">
+                  <label>Objetivo</label>
+                  <textarea class="form-control" rows="3" placeholder="Objetivo del proyecto..." name="proyecto_objetivo" maxlength="254"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Alcance</label>
+                  <textarea class="form-control" rows="3" placeholder="Alcance del proyecto..." name="proyecto_alcance" maxlength="254"></textarea>
+                </div>
+              </div>
+            </div>
+            <!-- /.col -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="exampleInputFile">Cronograma del proyecto</label>
+                <input type="file" id="fileForUpload" accept="text/xml" />
+                <p class="help-block">Carga las actividades de tu proyecto desde el cronograma generado por MS.Project de tipo XML.</p>
+              </div>
+              <div class="form-group">
+                <label>Descripción</label>
+                <textarea class="form-control"  rows="3" placeholder="Descripción del proyecto..." name="proyecto_descripcion" maxlength="254"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Fecha de inicio</label>
+
+                <div class="input-group date">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                  <input type="date" min="{{ today }}"class="form-control pull-right" name="proyecto_fecha_inicio" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Sector del proyecto</label>
+
+                {% if lista_sectores %}
+                <select class="form-control select2" style="width: 100%;" name="proyecto_sector" required>
+                  {% for sector in lista_sectores %}
+
+                  <option value="{{ sector.sector_id }}">{{ sector.sector_nombre }}</option>
+                  {% endfor %}
+                </select>
+                {% endif %}
+              </div>
+
+              <div class="box-footer">
+               <button type="submit" id="boton_nuevo_riesgo" class="btn btn-primary pull-right">Registrar</button>
+              </div>
+            </div>
+            <!-- /.col -->
+          </div>
+          <!-- /.row -->
+        </form>
+        {% else %}
+        <div class="pad margin no-print">
+          <div class="callout callout-info" style="margin-bottom: 0!important;">
+            <h4>Nota:</h4>
+            Hasta el momento no puede agregar proyectos porque no cuenta con una EDR definida. Por favor, configure su EDR <a href="/mi_rbs/">aquí.</a>
+          </div>
+        </div>
+        {% endif %} 
+      </div>
+
+      <!-- /.box-body -->
+
+    </div>
+  </section>
+  <!-- /.box -->
+</div>
+{% endblock %}
+
+{% block mis_scrtips_riesgos %}
+{% load static %}
+<!-- DataTables -->
+<script src="{% static 'risk_project/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'risk_project/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+<!-- SlimScroll -->
+<script src="{% static 'risk_project/bower_components/jquery-slimscroll/jquery.slimscroll.min.js' %}"></script>
+<!-- FastClick -->
+<script src="{% static 'risk_project/bower_components/fastclick/lib/fastclick.js' %}"></script>
+<script src="{% static 'risk_project/dist/js/risk_ufps/nuevo_proyecto.js' %}"></script>
+<script src="{% static 'risk_project/plugins/sweetalert/sweetalert.js' %}"></script> 
+
+<script type="text/javascript">
+function algo() {
+    let timerInterval;
+Swal.fire({
+  title: 'Creando proyecto',
+  html: 'subiendo actividades',
+  timerProgressBar: true,
+  willOpen: () => {
+    Swal.showLoading()
+    timerInterval = setInterval(() => {
+      const content = Swal.getContent()
+      if (content) {
+        const b = content.querySelector('b')
+        if (b) {
+          b.textContent = Swal.getTimerLeft()
+        }
+      }
+    }, 100)
+  },
+}).then((result) => {
+  /* Read more about handling dismissals below */
+  if (result.dismiss === Swal.DismissReason.timer) {
+    console.log('I was closed by the timer')
+  }
+});
+}
+$(function() {
+$("#form_proyecto").submit(function(e) {
+    e.preventDefault();    
+    var actionurl = e.currentTarget.action;
+    var file = document.getElementById("fileForUpload").files[0];
+    document.getElementById("boton_nuevo_riesgo").disabled = true;
+  
+    if(file){    
+    Swal.fire({
+      title: 'Creando proyecto',
+      html: 'subiendo actividades',
+      timerProgressBar: true,
+      willOpen: () => {
+        Swal.showLoading();
+        obtenerJson(file, function(myJson){
+          setJsonMpp(myJson);
+        });  
+       }
+    });          
+    }else{
+      console.log("no hay");
+      $.ajax({
+            url: actionurl,
+            type: 'POST',
+            headers: {'X-CSRFToken': csrftoken},
+            data: $("#form_proyecto").serialize()+"&actividades=False",
+            success: function(data) {
+              Swal.fire(
+                '¡ Registro exitoso !',
+                'el proyecto se ha registrado',
+                'success'
+              ).then(function () {
+                window.location.href = "/nuevoproyecto/";
+              });                
+            }, error: function (jqXhr, textStatus, errorMessage) {
+              console.log(errorMessage);
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '¡ No se pudo registrar el proyecto !',             
+              }).then(function () {
+                window.location.href = "/nuevoproyecto/";
+              });
+            }
+        });
+    }
+
+});
+});
+
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+</script>
+{% endblock %}

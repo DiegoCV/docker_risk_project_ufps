@@ -1,0 +1,102 @@
+{% extends "plantilla.html" %}
+
+{% block title %} Proyectos {% endblock %}
+
+{% block name1 %}Camilo Galvis{% endblock %}
+
+{% block name2 %}Camilo Galvis{% endblock %}
+
+{% block name3 %}Camilo Galvis{% endblock %}
+
+{% block content %}
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Categorías de Recursos
+        <small>Panel de Control</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Inicio</a></li>
+        <li class="active">Categorías de Recursos</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+
+        <!-- /.Tabla -->
+        <div class="col-md-12">
+          <div class="box box-primary">
+
+            <div class="box-header with-border">
+              <h3 class="box-title">Categorías de Recursos</h3>
+            </div>
+
+            <!-- /.box-header -->
+            <div class="box-body">
+            <div  id="app-6" class="box-body no-padding">
+              
+
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Nombre</th>
+                      <th>Descripción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    <tr v-for="tipo_recurso in tipos_recursos" :value="[[tipo_recurso.tipo_recurso_id]]">
+                      <td><input type="checkbox"></td>
+                      <td class="mailbox-name">[[tipo_recurso.tipo_recurso_nombre]]</td>
+                      <td class="mailbox-subject">[[tipo_recurso.tipo_recurso_descripcion]]</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <!-- /.table -->
+              </div>
+              <!-- /.mail-box-messages -->
+            </div>
+            <!-- /.box-body -->
+           
+          </div>
+          <!-- /. box -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </section>
+
+
+  </div>
+
+{% endblock %}
+{% block mis_scrtips_riesgos %}
+{% load static %}
+<!-- DataTables -->
+<script src="{% static 'risk_project/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'risk_project/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+<!-- SlimScroll -->
+<script src="{% static 'risk_project/bower_components/jquery-slimscroll/jquery.slimscroll.min.js' %}"></script>
+<!-- FastClick -->
+<script src="{% static 'risk_project/bower_components/fastclick/lib/fastclick.js' %}"></script>
+<script>
+$(function () {
+  $('#example1').DataTable()
+  $('#example2').DataTable({
+    'paging'      : true,
+    'lengthChange': false,
+    'searching'   : false,
+    'ordering'    : true,
+    'info'        : true,
+    'autoWidth'   : false
+  })
+})
+</script>
+<script src="{% static 'risk_project/dist/js/risk_ufps/mis_recursos.js' %}"></script>
+{% endblock %}

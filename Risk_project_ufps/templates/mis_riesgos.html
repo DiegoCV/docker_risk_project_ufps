@@ -1,0 +1,402 @@
+{% extends "plantilla.html" %}
+
+{% block title %}  RiskProject UFPS | Mis riesgos {% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Histórico de Riesgos
+        <small>Panel de Control</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Inicio</a></li>
+        <li class="active">Histórico de Riesgos</li>
+      </ol>
+      {% if mensaje_eliminar %}
+    <div class="callout callout-danger">
+      <h4>Borrado Exitoso</h4>
+      {{mensaje_eliminar}}      
+    </div>
+    {% endif %}
+
+    {% if mensaje_editar %}
+    <div class="callout callout-warning">
+      <h4>Actualización Exitosa</h4>
+      {{mensaje_editar}}      
+    </div>
+    {% endif %}
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+         <!-- /.Tabla -->
+
+         <div class="col-md-12">
+          <div class="box box-primary">
+
+            <div class="box-header with-border">
+              <h3 class="box-title">Riesgos</h3>        
+            </div>
+            <div class="box-body no-padding" style="margin-top: 7px; margin-left: 7px;">
+              <select class="form-control" id="subcategoria" name="categorias" onchange="set_riesgo(this);" style="width: 40%;"></select> 
+            </div>              
+            <!-- /.box-header -->
+            <div class="box-body" id="table_cont">
+
+              <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                  <tr>    
+                    <th></th>                
+                    <th>Nombre &nbsp<i class="fa fa-long-arrow-down"><i class="fa fa-long-arrow-up"></th>
+                    <th>Causa &nbsp<i class="fa fa-long-arrow-down"><i class="fa fa-long-arrow-up"></th>
+                    <th>Evento &nbsp<i class="fa fa-long-arrow-down"><i class="fa fa-long-arrow-up"></th>
+                    <th>Efecto &nbsp<i class="fa fa-long-arrow-down"><i class="fa fa-long-arrow-up"></th>
+                    <th>Tipo &nbsp<i class="fa fa-long-arrow-down"><i class="fa fa-long-arrow-up"></th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="body_riesgos">                 
+                <tr>
+                  <td></td>
+                  <td>No cuentas con riesgos asociados a esta subcategoría.</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th></th>
+                  <th>Nombre</th>
+                  <th>Causa</th>
+                  <th>Evento</th>
+                  <th>Efecto</th>
+                  <th>Tipo</th>
+                  <th>Acciones</th>
+                </tr>
+              </tfoot>
+            </table>
+
+
+
+          </div>
+
+        </div>
+        <!-- /. box -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+  </section>
+
+  <!-- /.modal-editar -->
+
+ <div class="modal fade" id="modal-editar">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Editar Riesgo</h4>
+          </div>
+          <div class="box-body">
+           <form  action="/editar_riesgo/" method="post">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                <label >Nombre </label>
+                <input type="text" class="form-control" maxlength="44" id="riesgo_nombre" name="riesgo_nombre">
+                </div>
+               
+                <div class="form-group">
+                  <label>Causa</label>
+                  <textarea class="form-control" rows="3" maxlength="254" id="riesgo_causa" name="riesgo_causa"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Evento</label>
+                  <textarea class="form-control" rows="5" maxlength="254" id="riesgo_evento" name="riesgo_evento"></textarea>
+                </div>
+              </div>
+              <!-- /.col -->
+              <div class="col-md-6">
+                 <div class="form-group">
+                
+                {% if lista_subcategorias %}
+                <label >Subcategoría</label>
+                  <select class="form-control"  name="sub_categoria_id" id="sub_categoria_id">
+                    {% for subcategoria in lista_subcategorias %}
+                    <option value="{{subcategoria.sub_categoria_id}}">
+                      {{ subcategoria.sub_categoria_nombre }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                {% endif %} 
+                </div>          
+                <div class="form-group">
+                <label >Tipo Riesgo</label>
+                  <select class="form-control"  name="riesgo_tipo" id="riesgo_tipo"> 
+                    <option value="0">Riesgo</option>
+                    <option value="1">Oportunidad</option>
+                  </select>                
+                </div>
+                <div class="form-group">
+                  <label>Efecto</label>
+                  <textarea class="form-control" rows="3"  maxlength="254" id="riesgo_efecto" name="riesgo_efecto"></textarea>
+                </div>
+                <input type="text" class="form-control" id="riesgo_id" name="riesgo_id" style="visibility:hidden">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary pull-left" data-dismiss="modal">Cerrar</button>
+              <button type="submit" class="btn btn-primary pull-right">Actualizar</button>
+            </div>
+            <!-- /.row -->
+          </form>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+
+  <!-- /.modal-eliminar -->
+
+  <div class="modal modal-danger fade" id="modal_eliminar" >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title"> Eliminar </h4>
+          </div>
+          <form  action="/eliminar_riesgo/" method="post">
+            {% csrf_token %}
+          <div class="modal-body">
+            <p id="contenido_modal">&hellip;</p>
+            <h2 id="id_subcategoria"></h2>
+            <input type="text" class="form-control" id="riesgo_id_e" name="riesgo_id" style="visibility:hidden">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-outline">Eliminar</button>
+          </div>
+          </form>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+  </div>
+
+  {% endblock %}
+  {% block mis_scrtips_riesgos %}
+
+  <!-- Los scritps necesarios para cada pagina -->
+
+  {% load static %}
+  <!-- DataTables gg -->
+  
+
+<!-- DataTables -->
+<script src="{% static 'risk_project/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+
+
+<script src="{% static 'risk_project/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+
+
+
+
+<!-- AdminLTE for demo purposes -->
+<script src="{% static 'risk_project/dist/js/demo.js' %}"></script>
+
+ <script>
+function abrir_modal_eliminar(id, nombre) {
+
+        
+
+        $("#modal_eliminar").modal('show');
+        document.getElementById("contenido_modal").innerHTML = "Estas seguro que desea eliminar el riesgo, este riesgo podria estar asociado a un proyecto o una respuesta.";
+        document.getElementById("id_subcategoria").innerHTML = " "+nombre;
+        var input_id = document.getElementById("riesgo_id_e");
+        input_id.value = id;
+
+        return false;
+    };
+
+function abrir_modal_editar(id, nombre, causa, efecto, evento) {
+            
+        $("#modal-editar").modal('show');
+        var input_id = document.getElementById("riesgo_id");
+        var input_nombre = document.getElementById("riesgo_nombre");
+        document.getElementById("riesgo_evento").innerHTML = ""+evento;
+        document.getElementById("riesgo_causa").innerHTML = ""+causa;
+        document.getElementById("riesgo_efecto").innerHTML = ""+efecto;
+        
+      
+        input_id.value = id;
+        input_nombre.value = nombre;
+        
+        return false;
+    };
+
+  var data = JSON.parse("{{rbs|escapejs}}"); 
+console.log(data);
+var diccionario = {};
+
+function formatear_data(){  
+  data.forEach(function(element){
+    diccionario[element["categoria"]["categoria_id"]] = element["subcategorias"];
+  });
+}
+
+function cargarCategorias() {
+    addOptions("categorias", data);
+    //addOptions("sub_categoria_id", data);
+}
+
+
+//Función para agregar opciones a un <select>.
+function addOptions(domElement, mi_array) {
+    var selector = document.getElementsByName(domElement)[0];
+    selector.innerHTML = '<option value="-1">Seleccione una Categoria...</option>'
+    for (var i = 0; i < mi_array.length; i++) {
+        var optgroup = document.createElement("optgroup");
+        optgroup.setAttribute("label", mi_array[i]["categoria"]["categoria_nombre"]);
+        for (var j = 0; j < mi_array[i]["subcategorias"].length; j++) {
+          var opcion = document.createElement("option");
+          opcion.text = mi_array[i]["subcategorias"][j]["subcategoria"]["sub_categoria_nombre"];        
+          opcion.value = mi_array[i]["subcategorias"][j]["subcategoria"]["sub_categoria_id"];
+          optgroup.appendChild(opcion);
+        }                 
+        selector.add(optgroup);
+    }
+}
+cargarCategorias();
+function set_riesgo(subcategoria){
+  table = $("#example1").DataTable();
+  table.destroy();
+  let body_riesgos = document.getElementById('body_riesgos');
+  body_riesgos.innerHTML = "";
+  let riesgos = get_riesgos_by_sub_categoria_id(subcategoria.value);
+  let flag = false;
+  for (var i = 0; i < riesgos.length; i++) {     
+    if(!riesgos[i]["is_assigned"]){
+      let tr = document.createElement("tr");   
+      let td_nombre = document.createElement("td");
+      td_nombre.appendChild(document.createTextNode(riesgos[i]["riesgo_nombre"]));
+      let td_causa = document.createElement("td");
+      td_causa.appendChild(document.createTextNode(riesgos[i]["riesgo_causa"]));
+      let td_evento = document.createElement("td");
+      td_evento.appendChild(document.createTextNode(riesgos[i]["riesgo_evento"]));
+      let td_efecto = document.createElement("td");
+      td_efecto.appendChild(document.createTextNode(riesgos[i]["riesgo_efecto"]));
+      let td_tipo = document.createElement("td");
+      if(riesgos[i]["riesgo_tipo"]=="0"){
+        td_tipo.appendChild(document.createTextNode("Riesgo"));
+      }else{
+        td_tipo.appendChild(document.createTextNode("Oportunidad"));
+      }
+            
+      let td_botones = document.createElement("td");
+      td_botones.appendChild(construir_btn_editar(riesgos[i]["riesgo_id"],riesgos[i]["riesgo_nombre"],riesgos[i]["riesgo_causa"],riesgos[i]["riesgo_evento"], riesgos[i]["riesgo_efecto"]));
+      td_botones.appendChild(construir_btn_eliminar(riesgos[i]["riesgo_id"],riesgos[i]["riesgo_nombre"],riesgos[i]["riesgo_causa"],riesgos[i]["riesgo_evento"], riesgos[i]["riesgo_efecto"]));
+      tr.appendChild(document.createElement("td"));
+      tr.appendChild(td_nombre);
+      tr.appendChild(td_causa);
+      tr.appendChild(td_evento);
+      tr.appendChild(td_efecto);
+      tr.appendChild(td_tipo);
+      tr.appendChild(td_botones);
+      body_riesgos.appendChild(tr);
+    }       
+  }
+  trasnformar_tabla("example1");
+  }
+
+function construir_btn_editar(riesgo_id, riesgo_nombre, riesgo_causa, riesgo_evento, riesgo_efecto){
+ let btn = document.createElement("button");
+ btn.setAttribute("type", "button"); 
+  btn.setAttribute("class", "btn btn-default"); 
+   btn.setAttribute("data-toggle", "#modal-editar"); 
+    btn.setAttribute("onclick", "abrir_modal_editar('"+riesgo_id+"','"+riesgo_nombre+"', '"+riesgo_causa+"', '"+riesgo_evento+"', '"+riesgo_efecto+"')");
+      btn.setAttribute("data-target", "#modal-editar");  
+  let i = document.createElement("i");
+  i.setAttribute("class", "fa fa-edit")
+  btn.appendChild(i);
+  return btn;
+}
+
+function construir_btn_eliminar(riesgo_id, riesgo_nombre, riesgo_causa, riesgo_evento, riesgo_efecto){
+ let btn = document.createElement("button");
+ btn.setAttribute("type", "button"); 
+  btn.setAttribute("class", "btn btn-danger"); 
+   btn.setAttribute("data-toggle", "#modal_eliminar"); 
+    btn.setAttribute("onclick", "abrir_modal_eliminar('"+riesgo_id+"','"+riesgo_nombre+"', '"+riesgo_causa+"', '"+riesgo_evento+"', '"+riesgo_efecto+"')");
+      btn.setAttribute("data-target", "#modal_eliminar"); 
+  let i = document.createElement("i");
+  i.setAttribute("class", "fa fa-trash-o danger")
+  btn.appendChild(i);
+return btn;
+}
+
+function get_riesgos_by_sub_categoria_id(sub_categoria_id) {
+  for (var i = 0; i < data.length; i++) {                  
+    for (var j = 0; j < data[i]["subcategorias"].length; j++) {
+      if(data[i]["subcategorias"][j]["subcategoria"]["sub_categoria_id"] == sub_categoria_id){
+        return data[i]["subcategorias"][j]["riesgos"];
+      }      
+    }                       
+  }
+}
+
+function trasnformar_tabla(id_tabla) {
+  t = $("#"+id_tabla).DataTable({    
+     "language": {
+         "sProcessing":    "Procesando...",
+         "sLengthMenu":    "Mostrar _MENU_ registros",
+         "sZeroRecords":   "No se encontraron resultados",
+         "sEmptyTable":    "No cuentas con riesgos asociados a esta subcategoría.",
+         "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+         "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+         "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+         "sInfoPostFix":   "",
+         "sSearch":        "Buscar:",
+         "sUrl":           "",
+         "sInfoThousands":  ",",
+         "sLoadingRecords": "Cargando...",
+         "oPaginate": {
+             "sFirst":    "Primero",
+             "sLast":    "Último",
+             "sNext":    "Siguiente",
+             "sPrevious": "Anterior"
+         },
+         "oAria": {
+             "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+             "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+         }
+     }
+    }); 
+  t.on( 'order.dt search.dt', function () {
+          t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+              cell.innerHTML = i+1;
+          } );
+      } ).draw();
+}
+ 
+ $(function() {
+   trasnformar_tabla("example1");  
+ })
+</script>
+ 
+{% endblock %}

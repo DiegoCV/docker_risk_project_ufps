@@ -1,0 +1,116 @@
+{% extends "plantilla.html" %}
+
+{% block title %} RiskProject UFPS | Registrar Respuesta {% endblock %}
+
+{% block content %}
+
+
+
+<div class="content-wrapper">
+
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+
+    <h1>
+      Acciones
+      <small>Nueva Acción de Respuesta</small>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a href="#"><i class="fa fa-dashboard"></i> Accion</a></li>
+      <li class="active">Nueva Acción de Respuesta</li>
+    </ol>
+
+    {% if mensaje %}
+    <div class="callout callout-info">
+      <h4>Registro Exitoso</h4>
+      {{mensaje}}      
+    </div>
+    {% endif %}
+  </section>
+
+
+
+  <section class="content">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Acciones de respuesta</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div>        
+      <div class="box-body" style="">
+        <p>Un plan de respuesta a los riesgos propone una serie de acciones y estrategias para poder dar una solución a cada uno de los riesgos identificados.<br><br>
+        En esta seccion, se podran visualizar todas las acciones de respuestas definidas para todos los riesgos definidos dentro de sus proyectos.<br></p>
+      </div>
+    </div>
+    <!-- SELECT2 EXAMPLE -->
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Registrar Acción de Respuesta</h3>        
+      </div>     
+      <div class="box-body">
+        {% if lista_riesgos|length > 0 %}
+        <form action="{% url 'nueva_respuesta' %}" method="post">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <div class="form-group">
+                  <label >Nombre</label>
+                  <input type="text" class="form-control" maxlength="44" id="respuesta_nombre" placeholder="Ingrese Nombre de la acción de respuesta" name="respuesta_nombre">
+                </div>
+              </div>
+              <div id="bloq_subcategorias" class="form-group">
+                <label>Riesgo Asociado</label>
+                {% if lista_riesgos %}
+                <select class="form-control select2" id="riesgo_id" name="riesgo_id">
+                  {% for riesgo in lista_riesgos %}
+                  <option value="{{ riesgo.riesgo_id }}">
+                    {{ riesgo.riesgo_nombre }}
+                  </option>
+                  {% endfor %} 
+                </select>
+                {% endif %} 
+
+              </div>
+              
+            </div>           
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Descripción</label>
+                <textarea class="form-control" rows="3" maxlength="254" placeholder="Descripción de la acción de respuesta..." name="respuesta_descripcion"></textarea>
+              </div>
+              
+              <div class="box-footer">                
+                <button type="submit" class="btn btn-primary pull-right">Registrar</button>
+              </div>
+            </div>
+            <!-- /.col -->
+          </div>
+          <!-- /.row -->
+        </form>
+        {% else %}
+        <div class="alert alert-info alert-dismissible">                
+          <h4><i class="icon fa fa-info"></i>  Atencion</h4> Hasta el momento no cuentas con un ningun riesgo definido dentro de su historial de riesgos.<br/>Para crear nuevas acciones de respuesta primero debe identificar riesgos a cualquiera de sus proyectos.
+      </div>
+        {% endif %}
+      </div><!-- /.box-body -->
+
+    </div>  
+  </section>
+  <!-- /.box -->
+</div>
+{% endblock %}
+{% block mis_scrtips_riesgos %}
+{% load static %}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
+<script >
+     $("#riesgo_id").select2();
+</script>
+
+{% endblock %}

@@ -1,0 +1,791 @@
+{% extends "procesos/plantilla_procesos.html" %}
+
+{% block title %} Proyecto {% endblock %}
+
+
+
+
+{% load static %}
+{% block organigrama_up %}
+
+{% endblock %}
+{% block content %}
+<div class="content-wrapper">
+  <div class="container">
+    <section class="content-header"  style="margin-top: 70px;">
+      <h1>
+        {% if proyecto %}
+        {{ proyecto.proyecto_nombre }}
+         <small>Histórico Linea Base</small>
+        {% endif %}       
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-folder-open"></i> Proyecto</a></li>
+        <li class="active">Histórico Linea Base</li>
+      </ol>      
+    </section>
+    <section class="content">
+
+      <div class="box">
+        <div class="box-group" id="accordion">
+          <div class="panel box box-primary">
+            <div class="box-header with-border">
+              <h4 class="box-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" style="color:#444444";>
+                  <label data-toggle="tooltip" data-placement="top" title="Presione aqui para ver mas información del proceso y generar su informe."><strong>Historico Lineas Base de la Administración del Riesgo {{ proyecto.proyecto_nombre }}  <i class="fa fa-sort-desc"></i></strong></label>
+                </a>
+              </h4>
+            </div>
+            <div id="collapseThree" class="panel-collapse collapse">
+              <div class="box-body">
+                En Este apartado se podrá observar la información correspondiente a una linea base del proyecto seleccionada, donde se incluyen los riesgos del proyecto, su clasificación, las acciones de respuesta, tareas y recursos asociados.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title">
+            <label data-toggle="tooltip" data-placement="top" title="En esta sección podra administrar toda la información de las acciones de respuesta asociadas a los riesgos del proyecto."><strong>Información Linea Base Nº {{ numero_linea }}  Proyecto {{ proyecto.proyecto_nombre }}</strong></label>
+          </h3>
+        </div>
+        <div class="box-body">
+        	<table id="tabla_riesgos" class="table table-bordered table-striped">
+	            <thead>
+	              <tr>
+	              	<th></th>
+	                <th>Riesgo &nbsp<i class="fa fa-long-arrow-down"><i class="fa fa-long-arrow-up"></th>                  
+                  <th><label data-toggle="tooltip" data-placement="top" title="Evaluación asignada al riesgo.">Categorización &nbsp<i class="fa fa-long-arrow-down"><i class="fa fa-long-arrow-up"></label></th>       
+	                <th><label data-toggle="tooltip" data-placement="top" title="Acciones de respuesta asociadas al riesgo.">Acciones </label></th>
+                  <th><label data-toggle="tooltip" data-placement="top" title="Tareas o actividades asociadas a las acciones.">Tareas </label></th>
+                  <th><label data-toggle="tooltip" data-placement="top" title="Recursos del proyecto asociados a las tareas.">Recursos</label></th>      
+                  <th><label data-toggle="tooltip" data-placement="top" title="Suma de los recursos asignados a las tareas">Costos</label></th>           
+	              </tr>
+	            </thead>
+	            <tbody>
+	             {% if lista_riesgos %}
+	             {% for riesgo in lista_riesgos %}
+	             <tr>
+	             	<td></td>
+	              <td>{{ riesgo.riesgo_nombre }}</td>
+                <td class="riesgo_rango" id="riesgo_rango_{{ riesgo.riesgo_id }}" value="{{ riesgo.riesgo_id }}">{{ riesgo.riesgo_id }}</td>
+	              <td> 
+	                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-respuestas" onclick="abrir_modal_respuestas('{{ riesgo.riesgo_id }}')"><i   class="fa fa-info"></i></button>
+	              </td>	             
+                <td>
+                  <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-tareas" onclick="abrir_modal_tareas('{{ riesgo.riesgo_id }}')"><i   class="fa fa-info"></i></button>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-recursos" onclick="abrir_modal_recursos('{{ riesgo.riesgo_id }}')"><i   class="fa fa-info"></i></button>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-recursos" onclick="abrir_modal_costos('{{ riesgo.riesgo_id }}')"><i   class="fa fa-info"></i></button>
+                </td>                  
+	            </tr>
+	            {% endfor %}
+	            {% else %}
+	            <tr>
+	              <td></td>
+	              <td>No cuentas con riesgos registrados.</td>
+	              <td></td> 
+	              <td></td>
+	            </tr>
+	            {% endif %} 
+	          </tbody>
+	          <tfoot>
+	            <tr>
+	              <th></th>
+	              
+                  <th>Riesgo</th>
+                  <th>Categorización</th>
+                  <th>Acciones</th>                  
+                  <th>Tareas</th>
+                  <th><label data-toggle="tooltip" data-placement="top" title="Corresponde a los recursos definidos dentro de este proyecto">Recursos</label></th> 
+                  <th><label data-toggle="tooltip" data-placement="top" title="Suma de los recursos asignados a las tareas">Costos</label></th>   
+	            </tr>
+	          </tfoot>
+	        </table>
+        </div>
+      </div>        
+  </div>
+</div>
+
+
+
+<!-- /.modal tareas -->
+<div class="modal fade" id="modal_tareas">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title"><i class="fa fa-edit"></i> Tareas</h4>
+        </div>
+        <div class="modal-body">
+         <div class="nav-tabs-custom">
+          <!-- Tabs within a box -->
+          <ul class="nav nav-tabs pull-right">
+            <li class="active"><a href="#listado-tareas" data-toggle="tab"> Listado</a></li>
+          </ul>
+          <div class="tab-content no-padding">
+            <!-- Morris chart - Sales -->
+            <div class="chart tab-pane active" id="listado-tareas" style="position: relative; height: 300px; overflow-y: scroll;">
+             <div class="box-body">
+               <table id="tabla_responsables" class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>                                       
+                  </tr>
+                </thead>
+                <tbody id="tareas_riesgo">          
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>                                       
+                  </tr>      
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>           
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.modal-content -->
+</div>
+<!-- /.modal-dialog -->
+</div>
+
+
+<!-- /.modal recursos -->
+<div class="modal fade" id="modal_recursos">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title"><i class="fa fa-edit"></i> Recursos</h4>
+        </div>
+        <div class="modal-body">
+
+         <div class="nav-tabs-custom">
+          <!-- Tabs within a box -->
+          <ul class="nav nav-tabs pull-right">
+            <li class="active"><a href="#listado-recursos" data-toggle="tab"> Listado</a></li>
+          </ul>
+          <div class="tab-content no-padding">
+            <!-- Morris chart - Sales -->
+            <div class="chart tab-pane active" id="listado-recursos" style="position: relative; height: 300px; overflow-y: scroll;">
+
+             <div class="box-body">
+
+               <table id="tabla_responsables" class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Tarea</th>
+                    <th>Recursos</th>
+                    <th>Cantidad</th>                                                         
+                  </tr>
+                </thead>
+                <tbody id="listado_recursos">         
+                  <tr>
+                    <td>No cuentas con recursos asociados a este riesgo.</td>
+                    <td></td>
+                  </tr>                  
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Tarea</th>
+                    <th>Recursos</th>
+                    <th>Cantidad</th>                            
+                  </tr>
+                </tfoot>
+              </table>
+            </div>  
+
+        </div>
+        <div class="chart tab-pane" id="nuevo-recurso" style="position: relative; height: 300px;">
+         <div class="box-body" id="recurso_form_nuevo">
+          <form action="/mi_proyecto/{{ proyecto.proyecto_id }}/nuevo_recurso_tarea/" method="post">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <div id="" class="form-group">
+                    <label>Recurso</label>
+                    {% if lista_recursos %}
+                    
+                    <select class="form-control select2"  id="recurso_id" name="recurso_id">
+                    {% for recurso in lista_recursos %}    
+                      <option value="{{ recurso.recurso_id }}">
+                       {{ recurso.recurso_nombre }}
+                     </option>
+                      {% endfor %}                      
+                   </select>                   
+                  {% else %}
+                    <p>No cuentas con recursos asociados al proyecto.</p>                    
+                  {% endif %}                 
+                  </div>
+
+                 <div class="form-group">
+                <label data-toggle="tooltip" data-placement="top" title="Ingrese la cantidad unitaria o de horas por semana requeridas del recurso.">Cantidad (Unitaria-Horas/Semana)</label>
+
+                <input type="number" min="1" class="form-control" id="recurso_cantidad" placeholder="Cantidad del recurso asignado..." name="recurso_cantidad">
+              </div>
+
+               </div>            
+             </div>
+             <div class="col-md-6">
+
+              
+
+               <div id="" class="form-group">
+                    <label>Tarea Asociada</label>                                        
+                    <select class="form-control select2" id="tarea_id" name="tarea_id">                       
+                   </select>
+                 </div>
+
+
+              <input type="text" class="form-control" id="riesgo_id_re" name="riesgo_id" style="visibility:hidden">
+              <!-- / input para pasar el id del riesgo al asociarle la actividad -->
+              
+              <button type="submit" class="btn btn-primary pull-right">Agregar</button>
+            </div>
+            <!-- /.col -->
+          </div>
+          <!-- /.row -->
+        </form>
+       </div><!-- /.box-body -->
+       <div class="callout callout-warning" id="recurso_letrero_uno" >
+        <h4>Notificación</h4>
+        Este proyecto no cuenta con recursos para poder asignar. <b>Registre sus recursos <a href="/recursos/{{proyecto.proyecto_id}}/">aqui</a></b>      
+      </div>
+      <div class="callout callout-warning" id="recurso_letrero_dos" hidden="true">
+        <h4>Notificación</h4>
+        Este riesgo no cuenta con tareas para poder asignar recursos.       
+      </div>
+     </div>     
+   </div>
+ </div>
+</div>
+</div>
+<!-- /.modal-content -->
+</div>
+<!-- /.modal-dialog -->
+</div>
+
+
+
+<!-- /modal respuestas -->
+<div class="modal fade" id="modal_respuestas">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title"><i class="fa fa-edit"></i> Acciones de Respuesta</h4>
+        </div>
+        <div class="modal-body">
+         <div class="nav-tabs-custom">
+          <!-- Tabs within a box -->
+          <ul class="nav nav-tabs pull-right">
+            <li class="active"><a href="#listado_respuestas" data-toggle="tab"> Listado</a></li>      </ul>
+          <div class="tab-content no-padding">
+            <!-- Morris chart - Sales -->
+            <div class="chart tab-pane active" id="listado_respuestas" style="position: relative; height: 300px; overflow-y: scroll;">
+             <div class="box-body">
+              <table id="tabla2" class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Respuesta</th>
+                    <th>Descripción</th>
+                    <th>Tipo Respuesta</th>                   
+                  </tr>
+                </thead>
+                <tbody id="respuestas_body">                 
+                  <tr>
+                    <td>No cuentas con respuestas asociadas a este riesgo.</td>
+                    <td></td>
+                    <td></td> 
+                    <td></td>                
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Respuesta</th>
+                    <th>Descripción</th>
+                    <th>Tipo Respuesta</th>                  
+                  </tr>
+                </tfoot>
+              </table>
+            </div>  
+          </div>
+       </div>
+      </div>
+    </div>
+  </div>
+  <!-- /.modal-content -->
+</div>
+<!-- /.modal-dialog -->
+</div>
+<!-- /modal respuestas -->
+
+
+
+<!-- /.modal costos -->
+
+<div class="modal fade" id="modal-costos"> 
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Costos</h4>
+      </div>
+      <div class="box-body" >
+        <div class="row justify-content-md-center">
+          <div class="col col-lg-1"></div>
+          <div class="col-md-10">
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th></th>
+                <th>Accion</th>
+                <th>Tarea</th>
+                <th>Recurso</th>
+                <th>Cantidad</th>
+                <th>Costo</th>
+              </tr>
+              </thead>
+              <tbody id="costos_body">
+              </tbody>
+              <tfoot>
+              <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>Costo del riesgo</th>
+                <th id="costo_riesgo"></th>
+              </tr>
+              <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>Total del proyecto</th>
+                <th id="costo_proyecto"></th>
+              </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="col col-lg-1"></div>
+        </div>   
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary pull-right" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>   
+</div>
+
+<!-- /.modal costos -->
+
+
+{% endblock %}
+{% block organigrama_down %}
+<!-- DataTables -->
+<script src="{% static 'risk_project/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'risk_project/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+
+<script type="text/javascript">
+  //////////////////////////////////////////
+  //  Variables globales
+  /////////////////////////////////////////
+
+  /*
+   *  Corresponde a todo el conjunto de riesgos del proyecto 
+   *  junto con sus respuestas asociadas  
+   */
+  var respuestas_riesgo = JSON.parse("{{respuestas_riesgo|escapejs}}");  
+  console.log(respuestas_riesgo);
+
+  
+
+  var lista_tareas = JSON.parse("{{lista_tareas|escapejs}}");  
+  console.log(lista_tareas);
+
+
+  //Contiene la cantidad de recursos que tiene el proyecto.
+  //Con esta variable puedo controlar el tipo de mensaje
+  //en el modal de nuevo recursos
+  var cantidad_recursos = parseInt("{{lista_recursos|length}}", 10);
+
+  
+  //Son los colores de la evaluacion
+  var rangos_riesgos = JSON.parse("{{rangos|escapejs}}");  
+  console.log(rangos_riesgos);
+
+  var riesgos_evaluados = JSON.parse("{{riesgos_evaluados|escapejs}}");  
+  console.log("riesgos_evaluados", riesgos_evaluados);
+
+  var valores = JSON.parse("{{valores|escapejs}}");
+  console.log(valores);
+
+  function pintar_rangos_riesgos() {
+    let riesgos = document.getElementsByClassName("riesgo_rango");
+    for (let i = 0; i < riesgos.length; i++) {  
+      riesgo_id = riesgos[i].innerText;
+      riesgos[i].innerHTML ="";
+      let key = 'riesgo_' + riesgo_id;
+      if(riesgos_evaluados.hasOwnProperty(key)){
+        impacto_id = riesgos_evaluados[key]['impacto_id'];
+        probabilidad_id = riesgos_evaluados[key]['propabilidad_id'];
+        impacto_escala = get_escala_by_impacto_id(impacto_id);
+        probabilidad_escala = get_escala_by_probabilidad_id(probabilidad_id);
+        evaluacion = impacto_escala * probabilidad_escala;
+        rango = get_rango(evaluacion);        
+        let temp = '<small class="label" style="background-color:'+rango[0]+';"></i>'+rango[1]+'</small>';
+        let gg = $.parseHTML(temp) 
+        $("#riesgo_rango_"+riesgo_id).append(gg);
+      }
+    }
+  }
+
+  function get_escala_by_impacto_id(impacto_id) {
+    impactos = valores['impactos'];
+    escala = 0;
+    for (let i = 0; i < impactos.length; i++) {
+      if(impactos[i]['id'] == impacto_id){
+        escala = impactos[i]['escala'];
+        break;
+      }
+    }
+    return escala;
+  }
+
+  function get_escala_by_probabilidad_id(probabilidad_id) {
+    probabilidades = valores['probabilidades'];
+    escala = 0;
+    for (let i = 0; i < probabilidades.length; i++) {
+      if(probabilidades[i]['id'] == probabilidad_id){
+        escala = probabilidades[i]['escala'];
+        break;
+      }
+    }
+    return escala;
+  }
+
+  function get_rango(valor){
+    color = 0;
+    nombre = "";
+    n = rangos_riesgos.length;
+    for (let i = 0; i < n - 1; i++) {
+      let rango = rangos_riesgos[i]["rango"];
+      if(valor >= rango[0] && valor <= rango[1] ){      
+        color = rangos_riesgos[i]["color"];
+        nombre = rangos_riesgos[i]["nombre"];
+        break;
+      }
+    }
+    if(color == 0){
+      color = rangos_riesgos[n-1]["color"];
+      nombre = rangos_riesgos[n-1]["nombre"];      
+    }
+    return [color, nombre];
+  }
+
+
+	$(document).ready(function() {
+	    var t = $("#tabla_riesgos").DataTable({
+			 
+			"order": [[ 1, 'asc' ]],
+	    	"language": {
+	         "sProcessing":    "Procesando...",
+	         "sLengthMenu":    "Mostrar _MENU_ registros",
+	         "sZeroRecords":   "No se encontraron resultados",
+	         "sEmptyTable":    "Ningún dato disponible en esta tabla",
+	         "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+	         "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+	         "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+	         "sInfoPostFix":   "",
+	         "sSearch":        "Buscar:",
+	         "sUrl":           "",
+	         "sInfoThousands":  ",",
+	         "sLoadingRecords": "Cargando...",
+	         "oPaginate": {
+	             "sFirst":    "Primero",
+	             "sLast":    "Último",
+	             "sNext":    "Siguiente",
+	             "sPrevious": "Anterior"
+	         },
+	         "oAria": {
+	             "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+	             "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+	         }
+	    	}	    	
+        	
+		}); 
+	 
+	    t.on( 'order.dt search.dt', function () {
+	        t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+	            cell.innerHTML = i+1;
+	        } );
+	    } ).draw();
+
+     /*
+      Este segmento permite activar los subtitulos para todos los elementos del documento
+    */    
+    $('[data-toggle="tooltip"]').tooltip();
+    pintar_rangos_riesgos();
+	});
+
+////////////////////////////////////////////
+// Funciones del modal acciones de respuesta
+////////////////////////////////////////////
+
+
+  function abrir_modal_respuestas(id_riesgo) { 
+    construir_listado_respuesta(id_riesgo);   
+    $("#modal_respuestas").modal('show');
+    v  
+  };
+
+
+  function construir_listado_respuesta(id_riesgo) {
+    let respuestas_body = document.getElementById('respuestas_body');
+    respuestas_body.innerHTML = "";
+    let key = 'riesgo_'+id_riesgo;
+   
+    if(respuestas_riesgo.hasOwnProperty(key)){   
+      let respuestas = respuestas_riesgo[key];
+      for (var i = 0; i < respuestas.length; i++) {
+        let tr = document.createElement("tr");   
+        let td_nombre = document.createElement("td");
+        let td_descripcion = document.createElement("td");
+        let td_tipo = document.createElement("td");        
+        td_nombre.appendChild(document.createTextNode(respuestas[i]["respuesta_nombre"]));
+        td_descripcion.appendChild(document.createTextNode(respuestas[i]["respuesta_descripcion"]));
+        td_tipo.appendChild(document.createTextNode(respuestas[i]["tipo_respuesta"]))
+        
+
+             
+        tr.appendChild(td_nombre);
+        tr.appendChild(td_descripcion);
+        tr.appendChild(td_tipo);          
+        respuestas_body.appendChild(tr);
+      }
+    }else{
+      let tr = document.createElement("tr");   
+      let td_nombre = document.createElement("td");
+      let td_descripcion = document.createElement("td");     
+      td_nombre.appendChild(document.createTextNode("No cuentas con respuestas asociadas a este riesgo.")); 
+      tr.appendChild(td_nombre);
+      tr.appendChild(td_descripcion);       
+      respuestas_body.appendChild(tr);  
+    }  
+  }
+
+////////////////////////////////////////////////
+// ./Funciones del modal acciones de respuesta
+////////////////////////////////////////////////
+
+////////////////////////////////////////////////
+// Funciones del modal costos
+////////////////////////////////////////////////
+
+ 
+  function abrir_modal_costos(riesgo_id) {
+    let costos_body = document.getElementById("costos_body");
+    costos_body.innerHTML = "";
+    let key = 'riesgo_'+riesgo_id;
+    let total = 0;  
+    let total_proyecto = get_costo_total_proyecto();
+    if(lista_tareas.hasOwnProperty(key)){   
+      let tareas = lista_tareas[key];
+      let cont = 1;      
+      for (let i = 0; i < tareas.length; i++) {
+        let tarea = tareas[i];
+        if(tarea['recursos'].length > 0){
+          let respuesta = get_respuesta_by_riesgo_has_respuesta(riesgo_id, tareas[i]['riesgo_has_respuesta']);
+          let recursos_nombres = "";
+          let recursos_costos = "";
+          let recursos_cantidad = "";
+          for (let j = 0; j < tarea['recursos'].length; j++) {
+            recursos_nombres += tarea['recursos'][j]['recurso_nombre'] + '<br>';
+            let c = tarea['recursos'][j]['cantidad'] * tarea['recursos'][j]['recurso_costo'];
+            recursos_costos += tarea['recursos'][j]['recurso_costo'] + '<br>';
+            recursos_cantidad += tarea['recursos'][j]['cantidad'] + '<br>';
+            total += c;
+          }
+          let temp = '<tr><td>'+cont+'</td><td>'+respuesta['respuesta_nombre']+'</td><td>'+tareas[i]['tarea_nombre']+'</td><td>'+recursos_nombres+'</td><td>'+recursos_cantidad+'</td><td>'+recursos_costos+'</td></tr>'
+          let gg = $.parseHTML(temp) 
+          $(costos_body).append(gg);
+          $("#costo_riesgo").text("$"+total);
+          $("#costo_proyecto").text("$"+total_proyecto);
+        }
+      }
+    }else{
+      let tempr = '<tr><td></td><td>No existen costos para mostrar</td><td></td><td></td><td></td><td></td></tr>'
+      let ggt = $.parseHTML(tempr) 
+      $(costos_body).append(ggt); 
+      $("#costo_riesgo").text("$0");
+      $("#costo_proyecto").text("$"+total_proyecto);
+    }        
+    $("#modal-costos").modal('show');  
+  }
+
+  function get_costo_total_proyecto() {
+    let aux = 0;
+    //perdoname Diosito(Object.keys(an_obj)
+    Object.keys(lista_tareas).forEach(function(key) {
+      let riesgo = lista_tareas[key];
+      riesgo.forEach(function(tarea) {
+        tarea['recursos'].forEach(function(recurso) {
+          aux += recurso['recurso_costo'] * recurso['cantidad'];
+        });
+      });
+    });
+    return aux;
+  } 
+
+  function get_respuesta_by_riesgo_has_respuesta(riesgo_id, riesgo_has_respuesta){      
+    let key = 'riesgo_'+riesgo_id;   
+    if(respuestas_riesgo.hasOwnProperty(key)){   
+      let respuestas = respuestas_riesgo[key];      
+      for (let i = 0; i < respuestas.length; i++) {
+        if( respuestas[i]['riesgo_has_respuesta'] == riesgo_has_respuesta ){
+          return respuestas[i];
+        } 
+      }
+    }
+    return null;
+  }
+
+
+ 
+////////////////////////////////////////////////
+// ./Funciones del modal costos
+////////////////////////////////////////////////
+
+//////////////////////////////////////////////
+// Funciones para el modal de tareas
+//////////////////////////////////////////////
+
+  function abrir_modal_tareas(id_riesgo) {
+    
+    construir_listado_tareas(id_riesgo);
+    $("#modal_tareas").modal('show');
+  };
+
+  function construir_listado_tareas(id_riesgo) {
+    let tareas_riesgo = document.getElementById('tareas_riesgo');
+    tareas_riesgo.innerHTML = "";
+    let key = 'riesgo_'+id_riesgo;   
+    if(lista_tareas.hasOwnProperty(key)){   
+      let tareas = lista_tareas[key];
+      for (var i = 0; i < tareas.length; i++) {
+        let tarea = tareas[i];
+        let temp = '<tr><td>'+tarea["tarea_nombre"]+'</td><td>'+tarea["tarea_descripcion"]+'</td><td>'+tarea["fecha_inicio"]+'</td><td>'+tarea["fecha_fin"]+'</td></tr>';       
+        let gg = $.parseHTML(temp) 
+        $(tareas_riesgo).append(gg);
+      }
+    }else{
+      let tr = document.createElement("tr");   
+      let td_nombre = document.createElement("td");
+      let td_descripcion = document.createElement("td");
+      let td_fecha_inicio = document.createElement("td");
+      let td_fecha_fin = document.createElement("td");
+      td_nombre.appendChild(document.createTextNode("No cuentas con tareas asociadas a este riesgo.")); 
+      tr.appendChild(td_nombre);
+      tr.appendChild(td_descripcion);
+      tr.appendChild(td_fecha_inicio);
+      tr.appendChild(td_fecha_fin);     
+      tareas_riesgo.appendChild(tr);  
+    }  
+  }
+
+
+//////////////////////////////////////////////
+// ./Funciones para el modal de tareas
+//////////////////////////////////////////////
+
+
+//////////////////////////////////////////////
+// ./Funciones para el modal de recursos
+//////////////////////////////////////////////
+  function abrir_modal_recursos(id_riesgo) {    
+   
+    construir_listado_recursos(id_riesgo);
+    $("#modal_recursos").modal('show');       
+  }
+
+
+function construir_listado_recursos(id_riesgo) {
+    let listado_recursos = document.getElementById('listado_recursos');
+    listado_recursos.innerHTML = "";
+    let key = 'riesgo_'+id_riesgo;
+
+    if(lista_tareas.hasOwnProperty(key)){   
+      let tareas = lista_tareas[key];      
+      for (var i = 0; i < tareas.length; i++) {
+        let tarea = tareas[i];
+
+        for(let j = 0; j < tarea["recursos"].length; j++){
+
+          let recurso = tarea["recursos"][j];
+          let temp = '<tr><td>'+tarea["tarea_nombre"]+'</td><td>'+recurso["recurso_nombre"]+'</td><td>'+recurso["cantidad"]+'</td></tr>';
+          let gg = $.parseHTML(temp); 
+          $(listado_recursos).append(gg);
+        }
+      }
+    }else{
+      let tr = document.createElement("tr");   
+      let td_nombre = document.createElement("td");
+      let td_descripcion = document.createElement("td");     
+      td_nombre.appendChild(document.createTextNode("No cuentas con recursos asociados a este riesgo.")); 
+      tr.appendChild(td_nombre);
+      tr.appendChild(td_descripcion);         
+      listado_recursos.appendChild(tr);  
+    }  
+  }
+          
+
+//////////////////////////////////////////////
+// ./Funciones para el modal de recursos
+//////////////////////////////////////////////
+ 
+
+
+  
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+</script>
+
+
+{% endblock %}

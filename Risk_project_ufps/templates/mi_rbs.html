@@ -1,0 +1,761 @@
+{% extends "plantilla.html" %}
+
+{% block title %} RiskProject UFPS | Mi RBS {% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+{% block organigrama_up %}
+<!-- Ionicons
+<link rel="stylesheet" href="{% static 'risk_project/bower_components/Ionicons/css/ionicons.min.css' %}">-->
+<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+
+<link rel="stylesheet" href="{% static 'risk_project/plugins/org-chart/css/jquery.orgchart.css' %}">
+<link rel="stylesheet" href="{% static 'risk_project/plugins/org-chart/css/style.css' %}">
+
+<style type="text/css">
+  #chart-container {
+    background-color: #ffffff;
+    height: auto;
+    border: none;
+  }
+
+  .orgchart {
+    background: #ffffff;
+  }
+
+  .orgchart .second-menu-icon {
+    transition: opacity .5s;
+    opacity: 0;
+    right: -3px;
+    top: 2px;
+    z-index: 2;
+    position: absolute;
+
+  }
+
+
+  .orgchart .second-menu-icon::before {
+    background-color: rgba(113, 175, 210, 1);
+  }
+
+  .orgchart .second-menu-icon:hover::before {
+    background-color: #1d455b;
+  }
+
+  .orgchart .node:hover .second-menu-icon {
+    opacity: 1;
+  }
+
+  .orgchart .second-menu-del {
+    transition: opacity .5s;
+    opacity: 0;
+    right: -3px;
+    top: 23px;
+    z-index: 2;
+    position: absolute;
+
+  }
+
+  .orgchart .second-menu-del::before {
+    background-color: rgba(210, 113, 127, 1);
+  }
+
+  .orgchart .second-menu-del:hover::before {
+    background-color: #c64a5c;
+  }
+
+  .orgchart .node:hover .second-menu-del {
+    opacity: 1;
+  }
+
+  .orgchart .second-menu-add {
+    transition: opacity .5s;
+    opacity: 0;
+    right: -3px;
+    top: -20px;
+    z-index: 2;
+    position: absolute;
+
+  }
+
+  .orgchart .second-menu-add::before {
+    background-color: rgba(92, 198, 74, 1);
+  }
+
+  .orgchart .second-menu-add:hover::before {
+    background-color: #3e952f;
+  }
+
+  .orgchart .node:hover .second-menu-add {
+    opacity: 1;
+  }
+
+  .orgchart .middle-level .title { background-color: #117A65; }
+  .orgchart .middle-level .content { border-color: #117A65; }
+  .orgchart .low-level .title { background-color: #CA6F1E; }
+  .orgchart .low-level .content { border-color: #CA6F1E; }
+</style>
+{% endblock %}
+
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      Estructura Desglosada de Riesgos
+      <small>Panel de Control</small>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a href="#"><i class="fa fa-dashboard"></i> Inicio</a></li>
+      <li class="active">Mi EDR</li>
+    </ol>
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+
+    <div class="row">
+
+      <!-- /.Tabla -->
+      <div class="col-md-12">
+        <div class="box box-primary">          
+          <div class="row">
+
+           <div class="col-md-11" style="align-items:  center;"><br>
+
+            <span class="label label-warning pull-right">Subcategorías</span>
+            <span class="label label-success pull-right">Categorías</span> 
+            <span class="label label-primary pull-right">EDR General</span>      
+
+          </div>    
+          <div class="row">
+
+           <div class="col-md-10" style="align-items:  center;"><br>
+            
+            <button type="button" name="button" class="btn btn-primary pull-right" onclick="confirmar_cambios();">confirmar cambios</button>        
+
+          </div>  
+              
+        </div>
+
+        <div class="box-body pad">
+
+          <div class="row">
+
+            <div class="col-md-12">
+              <div id="chart-container"></div>
+            </div>
+          </div> 
+          
+          
+        </div>        
+      </div>
+      <!-- /. box -->
+    </div>
+    <!-- /.col -->
+  </div>
+  <!-- /.row -->
+</section>
+</div>
+<!-- Inicio modal RBS -->
+<div class="modal fade" id="modal-editar" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span></button>
+          <h4 class="modal-title">Editar categoria</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group has-feedback">
+              <input type="text" class="form-control" placeholder="Nombre Categoría" name="caegoria_gerente_editar" id="categoria_nombre_editar">
+            </div>
+            <div class="form-group has-feedback">
+              <textarea class="form-control" rows="3" placeholder="Descripción" name="categoria_descripcion_editar" id="categoria_descripcion_editar"></textarea>
+            </div>
+            <input type="text" name="caegoria_id" id="categoria_id_editar" hidden="true" />
+
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="actualizar_categoria();">Save changes</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+
+  <div class="modal fade" id="modal-editar_subcategoria" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span></button>
+          <h4 class="modal-title">Editar subcategoria</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group has-feedback">
+              <input type="text" class="form-control" placeholder="Nombre Subcategoría" name="sub_categoria_gerente" id="sub_categoria_nombre_editar">
+            </div>
+            <div class="form-group has-feedback">
+              <textarea class="form-control" rows="3" placeholder="Descripción" name="sub_categoria_descripcion" id="sub_categoria_descripcion_editar"></textarea>
+            </div>
+            <input type="text" name="sub_categoria_id" id="sub_categoria_id_editar" hidden="true" />
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="actualizar_sub_categoria();">Save changes</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+
+<div class="modal modal-danger fade" id="modal-danger" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span></button>
+        <h4 class="modal-title" id="titulo_eliminar">¿Esta seguro que desea eliminar?</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group has-feedback">
+            <input type="text" class="form-control" placeholder="Nombre Subcategoría" id="nombre_eliminar" disabled>
+          </div>
+          <div class="form-group has-feedback">
+            <textarea class="form-control" rows="3" placeholder="Descripción" id="descripcion_eliminar" disabled></textarea>
+          </div>
+          <input type="text" id="id_eliminar" hidden="true" />
+          <input type="text"  id="tipo_eliminar" hidden="true" />
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-outline" onclick="eliminar_elemento();">Eliminar</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<div class="modal modal-success fade" id="modal-registrar" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span></button>
+        <h4 class="modal-title" id="titulo_registrar">Titulo</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group has-feedback">
+            <input type="text" class="form-control" id="nombre_agregar" maxlength="44" />
+          </div>
+          <div class="form-group has-feedback">
+            <textarea class="form-control" rows="3" id="descripcion_agregar" maxlength="200"></textarea>
+          </div>
+          <input type="text" name="sub_categoria_id" id="id_agregar" hidden="true" />
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-outline" onclick="agregar_elemento();">Guardar</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- Fin modal RBS -->
+{% endblock %}
+{% block mis_scrtips_riesgos %}
+{% load static %}
+<!-- DataTables -->
+<script src="{% static 'risk_project/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'risk_project/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+<!-- SlimScroll -->
+<script src="{% static 'risk_project/bower_components/jquery-slimscroll/jquery.slimscroll.min.js' %}"></script>
+<!-- FastClick -->
+<script src="{% static 'risk_project/bower_components/fastclick/lib/fastclick.js' %}"></script>
+{% endblock %}
+
+<!-- INICIO RBS -->
+{% block organigrama_down %}
+
+<script type="text/javascript" src="{% static 'risk_project/plugins/org-chart/js/jquery.mockjax.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'risk_project/plugins/org-chart/js/jquery.orgchart.js' %}"></script>
+<script src="{% static 'risk_project/plugins/sweetalert/sweetalert.js' %}"></script>
+
+<script type="text/javascript">
+  /* ############################
+      Variables globales
+    ###########################
+  */
+  // los datos de la rbs personal
+  var datos;
+  // la estructra del grafico
+  var oc;
+  // La información con las acciones que realizo usuario
+  var acciones = [];
+  // Cantidad de nuevos elementos
+  var cant_news_elementos = 0;
+  $(function() {
+  
+    $.ajax({
+      type: 'GET',
+
+      url: "/rbs/listar/",      
+
+      contentType: 'application/json',
+      dataType: 'json',
+      success: function(data, status, xhr) {
+        datos = data;
+        console.log(datos);
+        console.log(JSON.stringify(traducir_rbs(data)));
+        $.mockjax({
+          url: '/orgchart/initdata',
+          responseTime: 1000,
+          contentType: 'application/json',
+          responseText: traducir_rbs(data)
+        });
+        oc = $('#chart-container').orgchart({
+          'data': '/orgchart/initdata',
+          'nodeContent': 'title',
+          'nodeID': 'mi_id',
+          'verticalLevel': 3,
+          'pan': true,
+          'zoom': true,
+          'createNode': function($node, data) {
+            if (data.mi_tipo != 2) {
+              var secondMenuAdd = $('<i>', {
+                'class': 'oci oci-info-circle-add second-menu-add',
+                click: function() {
+                  abrir_modal_agregar(data.mi_tipo, data.mi_id);
+                }
+              });
+              $node.append(secondMenuAdd);
+            }
+
+            if(data.mi_tipo != 0){
+              var secondMenuIcon = $('<i>', {
+                'class': 'oci oci-info-circle-edit second-menu-icon',
+                click: function() {
+                  abrir_modal_editar(data.mi_tipo, data.mi_id);
+                }
+              });
+              var secondMenuDel = $('<i>', {
+                'class': 'oci oci-info-circle second-menu-del',
+                click: function() {
+                  abrir_modal_eliminar(data.mi_tipo, data.mi_id);
+                }
+              });
+              $node.append(secondMenuIcon);
+              $node.append(secondMenuDel);
+            }
+          }
+        });
+      },
+      error: function(jqXhr, textStatus, errorMessage) {
+        console.log("ERROR RBS");
+      }
+    });
+  });
+
+  function traducir_rbs(rbs) {
+    contenido = [];
+    let i = 1;
+    rbs.forEach((item) => {
+      let ii = "1." + i;
+      let categoria = {
+        'name': ii,
+        'title': item['categoria']['categoria_nombre'],
+        'mi_id': item['categoria']['categoria_id'],
+        'mi_tipo': 1,
+        "className":'middle-level'
+      };
+      children = [];
+      let j = 1;
+      if (item['subcategorias']) {
+        item['subcategorias'].forEach((sub_item) => {
+          children.push({
+            'name': ii + "." + j,
+            'title': sub_item["sub_categoria_nombre"],
+            'mi_id': sub_item["sub_categoria_id"],
+            'mi_tipo': 2,
+            'className':'low-level'
+          });
+          j = j + 1;
+        });
+      }
+      categoria["children"] = children;
+      contenido.push(categoria);
+      i = i + 1;
+    });
+
+    return {
+      'name': 'EDR',
+      'title': 'Estructura desglosada de riesgos',
+      'mi_id': "RBS_1",
+      'mi_tipo': 0,
+      'children': contenido
+    }
+  }
+
+  function caja_accion(mi_tipo, mi_id) {
+    console.log(mi_tipo, mi_id);
+  }
+
+  /*
+    /////////////////////////////
+      Metodos para cada nodo
+    ////////////////////////////
+  */
+  function abrir_modal_agregar(mi_tipo, mi_id) {
+    if (mi_tipo == 0) {
+      $('#titulo_registrar').text("Registar Categoria");
+      document.getElementById("nombre_agregar").placeholder = "Nombre Categoria";
+      document.getElementById("descripcion_agregar").placeholder= "Descripción Categoria"
+      document.getElementById("id_agregar").value = "RBS";
+    } else {
+      let categoria = obtener_categoria_datos(mi_id);
+      $('#titulo_registrar').text("Registar SubCategoria");
+      document.getElementById("nombre_agregar").placeholder = "Nombre SubCategoria";
+      document.getElementById("descripcion_agregar").placeholder= "Descripción SubCategoria"
+      document.getElementById("id_agregar").value = categoria["categoria_id"];
+    }
+    $('#modal-registrar').modal('toggle');
+  }
+
+  function agregar_elemento(){
+    let nombre = document.getElementById("nombre_agregar").value;
+    let descripcion = document.getElementById("descripcion_agregar").value;
+    let id_agregar = document.getElementById("id_agregar").value;
+    if(id_agregar == "RBS"){
+      agregar_categoria(nombre, descripcion);
+    }else{
+      agregar_sub_categoria(nombre, descripcion, id_agregar);
+    }
+    //Limpio campos
+    document.getElementById("nombre_agregar").value = "";
+    document.getElementById("descripcion_agregar").value = "";
+    document.getElementById("id_agregar").value ="";
+    $('#modal-registrar').modal('hide');
+  }
+
+  function abrir_modal_editar(mi_tipo, mi_id) {
+    if (mi_tipo == 0) {
+
+    } else if (mi_tipo == 1) {
+      for (var i = 0; i < datos.length; i++) {
+        if (datos[i]["categoria"]["categoria_id"] == mi_id) {
+          document.getElementById("categoria_nombre_editar").value = datos[i]["categoria"]["categoria_nombre"];
+          document.getElementById("categoria_descripcion_editar").value = datos[i]["categoria"]["categoria_descripcion"];
+          document.getElementById("categoria_id_editar").value = datos[i]["categoria"]["categoria_id"];
+          $('#modal-editar').modal('toggle');
+          break;
+        }
+      }
+    } else {
+      for (var i = 0; i < datos.length; i++) {
+        for (var j = 0; j < datos[i].subcategorias.length; j++) {
+          if (datos[i]["subcategorias"][j]["sub_categoria_id"] == mi_id) {
+            document.getElementById("sub_categoria_nombre_editar").value = datos[i]["subcategorias"][j]["sub_categoria_nombre"];
+            document.getElementById("sub_categoria_descripcion_editar").value = datos[i]["subcategorias"][j]["sub_categoria_descripcion"];
+            document.getElementById("sub_categoria_id_editar").value = datos[i]["subcategorias"][j]["sub_categoria_id"];
+            $('#modal-editar_subcategoria').modal('toggle');
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  function abrir_modal_eliminar(mi_tipo, mi_id) {
+    if (mi_tipo == 1) {
+      let categoria = obtener_categoria_datos(mi_id);
+      $('#titulo_eliminar').text("¿Está seguro de eliminar esta categoria?");
+      document.getElementById("nombre_eliminar").value = categoria["categoria_nombre"] ;
+      document.getElementById("descripcion_eliminar").value = categoria["categoria_descripcion"];
+      document.getElementById("id_eliminar").value = categoria["categoria_id"];
+      document.getElementById("tipo_eliminar").value = "categoria";
+    } else if(mi_tipo == 2) {
+      let sub_categoria = obtener_sub_categoria_datos(mi_id);
+      $('#titulo_registrar').text("¿Está seguro de eliminar esta subcategoria?");
+      document.getElementById("nombre_eliminar").value = sub_categoria["sub_categoria_nombre"] ;
+      document.getElementById("descripcion_eliminar").value = sub_categoria["sub_categoria_descripcion"];
+      document.getElementById("id_eliminar").value = sub_categoria["sub_categoria_id"];
+      document.getElementById("tipo_eliminar").value = "subcategoria";
+    }
+    $('#modal-danger').modal('toggle');
+  }
+
+  function eliminar_elemento() {
+    let id = document.getElementById("id_eliminar").value;
+    let tipo = document.getElementById("tipo_eliminar").value;
+    if(tipo == "categoria"){
+      eliminar_categoria(id);
+    }else if(tipo == 'subcategoria'){
+      eliminar_sub_categoria(id);
+    }
+    //Limpio campos
+    document.getElementById("nombre_eliminar").value = "";
+    document.getElementById("descripcion_eliminar").value = "";
+    document.getElementById("id_eliminar").value ="";
+    document.getElementById("tipo_eliminar").value = "";
+    $('#modal-danger').modal('hide');
+  }
+
+  function actualizar_categoria() {
+    let nombre = document.getElementById("categoria_nombre_editar").value;
+    let descripcion = document.getElementById("categoria_descripcion_editar").value;
+    let id = document.getElementById("categoria_id_editar").value;
+    editar_categoria(nombre, descripcion, id);
+    limpiar_modal_categoria();
+    $('#modal-editar').modal('hide');
+  }
+
+  /*
+    //////////////////////////////////////////////
+      Metodos para obtener los elementos de datos
+    /////////////////////////////////////////////
+  */
+
+  function obtener_categoria_datos(categoria_id) {
+    let categoria;
+    for (var i = 0; i < datos.length; i++) {
+      if (datos[i]["categoria"]["categoria_id"] == categoria_id) {
+        categoria = datos[i]["categoria"];
+        break;
+      }
+    }
+    return categoria;
+  }
+
+  function obtener_sub_categoria_datos(sub_categoria_id) {
+    let sub_categoria;
+    for (var i = 0; i < datos.length; i++) {
+      for (var j = 0; j < datos[i].subcategorias.length; j++) {
+        if (datos[i]["subcategorias"][j]["sub_categoria_id"] == sub_categoria_id) {
+          sub_categoria = datos[i]["subcategorias"][j];
+          break;
+        }
+      }
+    }
+    return sub_categoria;
+  }
+
+  function actualizar_sub_categoria() {
+    let nombre = document.getElementById("sub_categoria_nombre_editar").value;
+    let descripcion = document.getElementById("sub_categoria_descripcion_editar").value;
+    let id_sub = document.getElementById("sub_categoria_id_editar").value;
+    editar_sub_categoria(nombre, descripcion, id_sub);
+    limpiar_modal_sub_categoria();
+    $('#modal-editar_subcategoria').modal('hide');
+  }
+
+  function limpiar_modal_categoria() {
+    document.getElementById("categoria_nombre_editar").value = "";
+    document.getElementById("categoria_descripcion_editar").value = "";
+    document.getElementById("categoria_id_editar").value = "";
+  }
+
+  function limpiar_modal_sub_categoria() {
+    document.getElementById("sub_categoria_nombre_editar").value = "";
+    document.getElementById("sub_categoria_descripcion_editar").value = "";
+    document.getElementById("sub_categoria_id_editar").value = "";
+  }
+
+  function cambiar() {
+    oc.init({
+      'data': traducir_rbs(datos)
+    });
+  }
+/*
+  /////////////////////////////////////////
+    Metodos despues de llamar los modales
+  ////////////////////////////////////////
+*/
+  function agregar_categoria(categoria_nombre, categoria_descripcion) {
+    cant_news_elementos = cant_news_elementos + 1;
+    let cuerpo = {
+      categoria_nombre: categoria_nombre,
+      categoria_descripcion: categoria_descripcion,
+      categoria_id: "new_" + cant_news_elementos,
+      accion : "agregar_c"
+    };
+    let new_categoria = {
+      categoria: cuerpo,
+      subcategorias:[]
+    };
+    datos.push(new_categoria);
+    acciones.push(cuerpo);
+    oc.init({
+      'data': traducir_rbs(datos)
+    });
+  }
+
+  function agregar_sub_categoria(nombre, descripcion, id_agregar){
+    cant_news_elementos = cant_news_elementos + 1;
+    console.log(id_agregar);
+    let new_sub_categoria = {
+        sub_categoria_nombre: nombre,
+        sub_categoria_descripcion: descripcion,
+        sub_categoria_id: "new_" + cant_news_elementos,
+        categoria_id : id_agregar,
+        accion : "agregar_sc"
+      };
+      for (var i = 0; i < datos.length; i++) {
+        if (datos[i]["categoria"]["categoria_id"] == id_agregar) {
+          datos[i]["subcategorias"].push(new_sub_categoria);
+          break;
+        }
+      }
+    acciones.push(new_sub_categoria);
+    oc.init({
+      'data': traducir_rbs(datos)
+    });
+  }
+
+  function eliminar_categoria(categoria_id) {
+    let accion = {
+        accion : "eliminar_c",
+        categoria_id: categoria_id,
+    };
+    for (var i = 0; i < datos.length; i++) {
+      if (datos[i]["categoria"]["categoria_id"] == categoria_id) {
+        datos.splice(i, 1);
+        break;
+      }
+    }
+    acciones.push(accion);
+    oc.init({
+      'data': traducir_rbs(datos)
+    });
+  }
+
+  function eliminar_sub_categoria(sub_categoria_id){
+    let accion = {
+        accion : "eliminar_sc",
+        sub_categoria_id: sub_categoria_id,
+    };
+    for (var i = 0; i < datos.length; i++) {
+      for (var j = 0; j < datos[i].subcategorias.length; j++) {
+        if (datos[i]["subcategorias"][j]["sub_categoria_id"] == sub_categoria_id) {
+          datos[i]["subcategorias"].splice(j, 1);
+          break;
+        }
+      }
+    }
+    acciones.push(accion);
+    oc.init({
+      'data': traducir_rbs(datos)
+    });
+  }
+
+  function editar_categoria(categoria_nombre, categoria_descripcion, categoria_id) {
+    cant_news_elementos = cant_news_elementos + 1;
+    let new_categoria = {
+        categoria_nombre: categoria_nombre,
+        categoria_descripcion: categoria_descripcion,
+        categoria_id: categoria_id,
+        accion : "editar_c"
+    };
+    for (var i = 0; i < datos.length; i++) {
+      if (datos[i]["categoria"]["categoria_id"] == categoria_id) {
+        datos[i]["categoria"]["categoria_nombre"] = categoria_nombre;
+        datos[i]["categoria"]["categoria_descripcion"] = categoria_descripcion;
+        datos[i]["categoria"]["is_update"] = true;
+
+      }
+    }
+    acciones.push(new_categoria)
+    oc.init({
+      'data': traducir_rbs(datos)
+    });
+  }
+
+  function editar_sub_categoria(nombre, descripcion, id_subcategoria){
+
+    let new_sub_categoria = {
+        sub_categoria_nombre: nombre,
+        sub_categoria_descripcion: descripcion,
+        sub_categoria_id: id_subcategoria,
+        accion : "editar_sc"
+      };
+
+      for (var i = 0; i < datos.length; i++) {
+        for (var j = 0; j < datos[i].subcategorias.length; j++) {
+          if (datos[i]["subcategorias"][j]["sub_categoria_id"] == id_subcategoria) {
+            datos[i]["subcategorias"][j]["sub_categoria_nombre"] = nombre;
+            datos[i]["subcategorias"][j]["sub_categoria_descripcion"] = descripcion;
+            datos[i]["subcategorias"][j]["is_update"] = true;
+            break;
+          }
+        }
+      }
+    acciones.push(new_sub_categoria);
+    oc.init({
+      'data': traducir_rbs(datos)
+    });
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+
+  function confirmar_cambios(){
+    $.ajax({
+      type: 'POST',
+      url: "/rbs/confirmar_cambios/",
+      headers: {'X-CSRFToken': csrftoken},
+      data:{'acciones':  JSON.stringify(acciones)},
+      success: function (data, status, xhr) {              
+         Swal.fire(
+          '¡ Registro exitoso !',
+          'los cambios se han efectuado',
+          'success'
+        ).then(function () {
+          window.location.href = "/mi_rbs/";
+        });     
+      },
+      error: function (jqXhr, textStatus, errorMessage) {
+        console.log(errorMessage);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: '¡ No se pudo realizar los cambios !',             
+        }).then(function () {
+          window.location.href = "/mi_rbs/";
+        });        
+      }
+    });
+  }
+</script>
+
+{% endblock %}
+
+<!-- FIN RBS -->

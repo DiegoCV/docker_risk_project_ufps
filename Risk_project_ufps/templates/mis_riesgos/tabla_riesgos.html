@@ -1,0 +1,22 @@
+<table  id="plantilla_tabla_riesgos" class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Riesgo</th>
+      <th>Causa</th>
+      <th>Evento</th>
+      <th>Efecto</th>
+      <th>Evaluación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="riesgo in riesgos">
+      <td><input type="checkbox"></td>
+      <td class="mailbox-name">[[riesgo.riesgo_nombre]]</td>
+      <td class="mailbox-subject">[[riesgo.riesgo_causa]]</td>
+      <td class="mailbox-date">[[riesgo.riesgo_evento]]</td>
+      <td class="mailbox-date">[[riesgo.riesgo_efecto]]</td>
+      <td class="mailbox-date">[[riesgo.riesgo_prom_evaluacion]]</td>
+    </tr>
+  </tbody>
+</table>

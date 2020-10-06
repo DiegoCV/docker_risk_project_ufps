@@ -1,0 +1,348 @@
+{% extends "procesos/plantilla_procesos.html" %}
+
+{% block title %} RiskProject UFPS | {{ proyecto.proyecto_nombre }} {% endblock %}
+ 
+
+{% block content %}
+
+
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="container">
+    <section class="content-header" style="margin-top: 70px;">
+      <h1>
+        {{ proyecto.proyecto_nombre }}
+        <small>Recursos</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> {{ proyecto.proyecto_nombre }}</a></li>
+        <li class="active">Recursos</li> 
+      </ol>
+      {% if mensaje %}
+      <div class="callout callout-info">
+        <h4>Registro Exitoso</h4>
+        {{mensaje}}      
+      </div>
+      {% endif %}
+      {% if mensaje_eliminar %}
+    <div class="callout callout-danger">
+      <h4>Borrado Exitoso</h4>
+      {{mensaje_eliminar}}      
+    </div>
+    {% endif %}
+
+    {% if mensaje_editar %}
+    <div class="callout callout-warning">
+      <h4>Actualización Exitosa</h4>
+      {{mensaje_editar}}      
+    </div>
+    {% endif %}
+    </section>
+  </section>
+
+  <section class="content">
+  
+  <div class="box box-primary">
+    <div class="box-header with-border">
+      <h3 class="box-title">Registrar Recurso</h3>
+    </div>
+
+    <!-- /.box-header -->
+
+    <div class="box-body">
+      <form role="form" action="/recursos/{{ proyecto.proyecto_id }}/" method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+
+              <div class="form-group">
+                <label >Nombre Recurso</label>
+                <input type="text" class="form-control" id="sub_categoria_nombre" placeholder="Ingrese Nombre del recurso" name="recurso_nombre">
+              </div>
+
+            </div>
+            <div class="form-group">
+              <label >Tipo de recurso al que pertenece</label>
+              {% if tipos_recursos %}
+              <select class="form-control select2" id="tipo_recurso_id" name="tipo_recurso_id" style="width: 100%;" onchange="actualizar_label()">
+                {% for tipo_recurso in tipos_recursos %}
+                <option value="{{tipo_recurso.tipo_recurso_id}}">
+                  {{tipo_recurso.tipo_recurso_nombre}}
+                </option>
+                {% endfor %}
+              </select>
+              {% endif %} 
+
+            </div>
+          </div>
+          <!-- /.col -->
+          <div class="col-md-6">
+            <div class="form-group">
+              <label id="label_costo" data-toggle="tooltip" data-placement="top" title="Agregue el costo por unidad o por hora según el tipo de recurso."><strong>Costo Unidad/Hora</label>
+              
+              <input type="number" class="form-control" id="recurso_costo" placeholder="Ingrese Costo del recurso" name="recurso_costo">
+            </div>
+            <div class="box-footer">
+              {% if proyecto.proyecto_fin_status %}
+              <button type="submit" class="btn btn-warning pull-right" disabled="true">Registrar</button>
+              {% else %}
+              <button type="submit" class="btn btn-warning pull-right">Registrar</button>
+              {% endif %}  
+
+              
+            </div>
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </form>
+    </div>
+
+  </div>
+
+    <div class="box box-primary">
+    <div class="box-header with-border">
+      <h3 class="box-title">Mis Recursos</h3>
+    </div>
+
+    <!-- /.box-header -->
+
+    
+          <div class="box-body">
+            <div   class="box-body no-padding">
+
+
+              <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th><label id="label_costo" data-toggle="tooltip" data-placement="top" title="Costo por unidad o por hora según el tipo de recurso."><strong>Costo</label></th> 
+                    <th><label id="label_costo" data-toggle="tooltip" data-placement="top" title="Categoría asociada al recurso."><strong>Tipo Recurso</label></th>                   
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if lista_recursos %}
+                  {% for recurso in lista_recursos %}
+                  <tr>
+                    <td class="mailbox-name" >{{ recurso.recurso_nombre }}</td>
+                    <td class="mailbox-subject">{{ recurso.recurso_costo }}</td>  
+                    <td class="mailbox-subject">{{ recurso.tipo_recurso.tipo_recurso_nombre }}</td>                    
+                    <td>
+                     {% if proyecto.proyecto_fin_status %}
+                     <button type="button" class="btn btn-default" data-toggle="modal-editar" onclick="abrir_modal_editar('{{ recurso.recurso_nombre }}', '{{ recurso.recurso_id }}')" data-target="#modal-editar" disabled="true"><i   class="fa fa-edit"></i>
+                     </button>
+
+
+                     <button type="button" class="btn btn-danger" data-toggle="#modal_eliminar" onclick="abrir_modal_eliminar('{{ recurso.recurso_nombre }}', '{{ recurso.recurso_id }}')" data-target="#modal_eliminar" disabled="true"><i class="fa fa-trash-o danger"></i>
+                     </button>
+                     {% else %}
+                     <button type="button" class="btn btn-default" data-toggle="modal-editar" onclick="abrir_modal_editar('{{ recurso.recurso_nombre }}', '{{ recurso.recurso_id }}')" data-target="#modal-editar"><i   class="fa fa-edit"></i>
+                     </button>
+
+
+                     <button type="button" class="btn btn-danger" data-toggle="#modal_eliminar" onclick="abrir_modal_eliminar('{{ recurso.recurso_nombre }}', '{{ recurso.recurso_id }}')" data-target="#modal_eliminar"><i class="fa fa-trash-o danger"></i>
+                     </button>
+                     {% endif %}
+
+
+
+                    
+
+                   </td>
+                 </tr>
+                  {% endfor %}
+                  {% else %}
+                  <tr>
+                    <td class="mailbox-name" >Aun no tienes recursos asignados al proyecto</td>
+                    <td class="mailbox-subject"></td>
+                    <td class="mailbox-subject"></td>
+                    <td class="mailbox-subject"></td>
+                  </tr> 
+                   {% endif %} 
+                </tbody>
+              </table>
+              
+            </div>
+           
+          </div>
+  
+    
+  </div>
+</div>
+
+<div class="modal fade" id="modal-editar">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Editar Tipo de Recurso</h4>
+          </div>
+          <div class="box-body">
+           <form  action="/editar_recurso/{{ proyecto.proyecto_id }}/" method="post">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                <label >Nombre </label>
+                <input type="text" class="form-control" id="recurso_nombre" name="recurso_nombre" required>
+                </div>               
+              </div>
+              <!-- /.col -->
+              <div class="col-md-6">             
+                <div class="form-group">
+                <label >Costo </label>
+                <input type="number" class="form-control" id="recurso_costo" name="recurso_costo" required>
+                </div>
+                <input type="text" class="form-control" id="recurso_id" name="recurso_id" style="visibility:hidden">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary pull-left" data-dismiss="modal">Cerrar</button>
+              <button type="submit" class="btn btn-primary pull-right">Actualizar</button>
+            </div>
+            <!-- /.row -->
+          </form>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+
+  <!-- /.modal-eliminar -->
+
+  <div class="modal modal-danger fade" id="modal_eliminar" >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title"> Eliminar </h4>
+          </div>
+          <form  action="/eliminar_recurso/{{ proyecto.proyecto_id }}/" method="post">
+            {% csrf_token %}
+          <div class="modal-body">
+            
+            <p id="contenido_modal">&hellip;</p>
+            <h2 id="recurso"></h2>           
+            <input type="text" class="form-control" id="recurso_id_e" name="recurso_id" style="visibility:hidden" >
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-outline">Eliminar</button>
+          </div>
+          </form>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block mis_scrtips_riesgos %}
+{% load static %}
+<!-- DataTables -->
+<script src="{% static 'risk_project/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+
+
+<script src="{% static 'risk_project/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+
+
+
+
+<!-- AdminLTE for demo purposes -->
+<script src="{% static 'risk_project/dist/js/demo.js' %}"></script>
+
+  <script>
+  $(function () {    
+    trasnformar_tabla('example1');
+  })
+</script>
+
+ <script>
+function abrir_modal_eliminar(nombre, id) {
+
+        
+
+        $("#modal_eliminar").modal('show');
+        document.getElementById("contenido_modal").innerHTML = "Estas seguro que desea eliminar el recurso del proyecto.";
+        document.getElementById("recurso").innerHTML = " "+nombre;
+        var input_id = document.getElementById("recurso_id_e");
+        
+        input_id.value = id;
+        
+        return false;
+    };
+
+function actualizar_label(){
+  
+  let aux = document.getElementById("tipo_recurso_id");
+  let v = aux.options[aux.selectedIndex].text;
+  console.log(v);  
+  if(v == "Material"){
+    document.getElementById("label_costo").innerHTML = "Costo Unidad";
+  }
+  else if(v == "Trabajo"){
+    document.getElementById("label_costo").innerHTML = "Costo Hora";
+  }
+  else if(v == "Costo"){
+    document.getElementById("label_costo").innerHTML = "Costo Unidad";
+  }
+
+
+}
+
+function abrir_modal_editar(nombre, id) {
+            
+        $("#modal-editar").modal('show');
+        var input_id = document.getElementById("recurso_id");
+        var input_nombre = document.getElementById("recurso_nombre");        
+        input_id.value = id;
+        input_nombre.value = nombre;
+        
+        return false;
+    };
+
+function trasnformar_tabla(id_tabla) {
+  $("#"+id_tabla).DataTable({
+     "language": {
+         "sProcessing":    "Procesando...",
+         "sLengthMenu":    "Mostrar _MENU_ registros",
+         "sZeroRecords":   "No se encontraron resultados",
+         "sEmptyTable":    "Ningún dato disponible en esta tabla",
+         "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+         "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+         "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+         "sInfoPostFix":   "",
+         "sSearch":        "Buscar:",
+         "sUrl":           "",
+         "sInfoThousands":  ",",
+         "sLoadingRecords": "Cargando...",
+         "oPaginate": {
+             "sFirst":    "Primero",
+             "sLast":    "Último",
+             "sNext":    "Siguiente",
+             "sPrevious": "Anterior"
+         },
+         "oAria": {
+             "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+             "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+         }
+     }
+    }); 
+}
+
+</script>
+
+{% endblock %}

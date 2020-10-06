@@ -1,0 +1,859 @@
+{% extends "procesos/plantilla_procesos.html" %}
+
+{% block title %} Proyecto {% endblock %}
+
+ 
+{% block content %}
+
+{% load static %}
+
+{% block organigrama_up %}
+
+<link rel="stylesheet" href="{% static 'risk_project/plugins/org-chart/css/jquery.orgchart.css' %}">
+
+<link rel="stylesheet" href="{% static 'risk_project/plugins/org-chart/css/style.css' %}">
+
+<!-- Bootstrap Color Picker -->
+<link rel="stylesheet" href="{% static 'risk_project/bower_components/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css' %}">
+
+
+<style type="text/css">
+  #chart-container {
+    background-color: #ffffff;
+    height: auto;
+    border: none;
+  }
+
+  .orgchart {
+    background: #ffffff;
+  }
+
+  .orgchart .middle-level .title { background-color: #117A65; }
+  .orgchart .middle-level .content { border-color: #117A65; }
+  .orgchart .low-level .title { background-color: #CA6F1E; }
+  .orgchart .low-level .content { border-color: #CA6F1E; }
+
+</style>
+
+{% endblock %}
+
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="container">
+    <section class="content-header" style="margin-top: 70px;">
+      <h1>
+        {% if proyecto %}
+        {{ proyecto.proyecto_nombre }}
+        {% endif %}
+        <small>Planificar la gestión de riesgos </small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-folder-open"></i> Proyecto</a></li>
+        <li class="active">Planificar la Gestión de Riesgos</li>
+      </ol>
+    </br>
+      {% if mensaje %}
+    <div class="callout callout-info">
+      <h4>Registro Exitoso</h4>
+      {{mensaje}}      
+    </div>
+    {% endif %}
+    {% if mensaje_eliminar %}
+    <div class="callout callout-danger">
+      <h4>Borrado Exitoso</h4>
+      {{mensaje_eliminar}}      
+    </div>
+    {% endif %}
+
+    {% if mensaje_editar %}
+    <div class="callout callout-warning">
+      <h4>Actualización Exitosa</h4>
+      {{mensaje_editar}}      
+    </div>
+    {% endif %}
+    </section>
+
+    <section class="content">
+      
+          <div class="box">
+            <div class="box-group" id="accordion">
+              <div class="panel box box-primary">
+                <div class="box-header with-border">
+                  <h4 class="box-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" style="color:#444444";>
+                      <label data-toggle="tooltip" data-placement="top" title="Presione aqui para ver mas información del proceso y generar su informe."><strong>Plan de Gestión de Riesgos - Proyecto: {{ proyecto.proyecto_nombre }}  <i class="fa fa-sort-desc"></i></strong></label>
+                      
+                      
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapseThree" class="panel-collapse collapse in">
+                  <div class="box-body">
+                   Durante este proceso se busca preparar un plan estratégico que permita definir la importancia del proyecto, la manera en que intervendrán la administración de riesgos, el equipo de gestión de riesgos, los criterios de evaluación, entre otros. A continuación podras descargar un informe de gestión de riesgos actualizado.
+                    </br>
+                    <a href="/mi_proyecto/{{ proyecto.proyecto_id }}/generar_informe_planificar/" class="btn btn-primary pull-right">Generar informe</a>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div>
+       
+
+     <div class="box box-primary">
+      <div class="box-header">
+        <h3 class="box-title">
+          <strong>Estructura Desglosada de Riesgos - Proyecto: {{ proyecto.proyecto_nombre }}</strong> 
+        </h3>         
+      </div>
+      {% if rbs %}
+
+      {% else %}        
+      <div class="pad margin no-print">
+        <div class="callout callout-info" style="margin-bottom: 0!important;">
+          <h4>Nota:</h4>
+          Hasta el momento no cuenta con una EDR (Estructura desglozada de riesgos) definida para este proyecto. 
+        </div>
+      </div>
+      {% endif %}
+
+
+      <!-- Main content -->
+      <section class="invoice">
+        <div class="nav-tabs-custom" style="cursor: move; ">
+          <!-- Tabs within a box -->
+          <ul class="nav nav-tabs pull-right ui-sortable-handle">
+
+            <li class="active"><a href="#revenue-chart" data-toggle="tab" aria-expanded="false"><label data-toggle="tooltip" data-placement="top" title="EDR actualizada del proyecto.">Proyecto</label></a></li>
+            <li class=""><a href="#sales-chart" data-toggle="tab" aria-expanded="true"><label data-toggle="tooltip" data-placement="top" title="EDR sugerida para el sector del proyecto.">Sugerida</label></a></li>
+            <li class=""><a href="#sales" data-toggle="tab" aria-expanded="true"><label data-toggle="tooltip" data-placement="top" title="EDR sugerida por PMBOK® 6th.">PMBOK® 6th</label></a></li>               
+            
+            <li class="pull-left header"><i class="fa fa-sitemap"></i>EDR</li>
+        </ul>            
+        <div class="tab-content no-padding">
+          <!-- Morris chart - Sales -->
+          <div class="chart tab-pane active" id="revenue-chart" style="height: 500px;">
+            <div class="row">
+              <div class="col-md-3">
+                <ul class="chart-legend clearfix">
+                  <span class="label label-warning pull-right">Subcategorías</span>
+                  <span class="label label-success pull-right">Categorías</span> 
+                  <span class="label label-primary pull-right">EDR General</span>                      
+                </ul>
+              </div>              
+              <div class="col-md-11">
+                <div id="chart-container_1" ></div>
+                <br>
+                <div class="callout callout-warning" id="cartel_propio" hidden="true">
+                  <h4>No existe una EDR propia del proyecto.</h4>
+                  <p>A medida que agrege riesgos al proyecto la EDR se construira automaticamente.</p>
+                </div>
+              </div>
+            </div>                         
+          </div>
+          <div class="chart tab-pane " id="sales-chart" style="position: relative; height: 500px;">
+            <div class="row">
+              <div class="col-md-3">
+                <ul class="chart-legend clearfix">
+                  <span class="label label-warning pull-right">Subcategorías</span>
+                  <span class="label label-success pull-right">Categorías</span> 
+                  <span class="label label-primary pull-right">EDR General</span>                      
+                </ul>
+              </div>
+              <div class="col-md-11">
+                <div id="chart-container_2"></div>
+                <br>
+                <div class="callout callout-warning" id="cartel_sugerido" hidden="true">
+                  <h4>No existe una EDR sugeridad para este proyecto.</h4>
+                  <p>Las EDR sugeridas se construyen a partir de proyectos del mismo sector, en este caso no existen proyectos de su mismo sector.</p>
+                </div>
+              </div>
+            </div>               
+          </div>
+          <div class="chart tab-pane " id="sales" style="position: relative; height: 500px;">
+            <div class="row">
+              <div class="col-md-3">
+                <ul class="chart-legend clearfix">
+                  <span class="label label-warning pull-right">Subcategorías</span>
+                  <span class="label label-success pull-right">Categorías</span> 
+                  <span class="label label-primary pull-right">EDR General</span>                      
+                </ul>
+              </div>
+              <div class="col-md-11">
+                <div id="chart-container_3"></div>
+              </div>
+            </div>               
+          </div>
+          </div>
+      </div>
+     
+
+      <!-- this row will not appear when printing -->
+      <div class="row no-print">
+        <div class="col-xs-12">    
+          <!--<button type="button" id="btnSave" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i> imagen-->
+          </button>        
+        </div>
+      </div>
+    </section>
+    <!-- /.content -->
+    <div class="clearfix"></div>
+
+
+    </div>
+
+  <div class="box box-primary">
+      <div class="box-header">
+        <label data-toggle="tooltip" data-placement="top" title="En esta sección podrá administrar su equipo de gestión de riesgos."><h3 class="box-title"><strong>Equipo de Gestión de Riesgos - Proyecto: {{ proyecto.proyecto_nombre }}&nbsp  &nbsp</strong></h3></label>        
+
+        {% if proyecto.proyecto_fin_status %}
+        <button type="button" class="btn btn-primary pull-right" data-toggle="modal"  data-target="#modal-agregar" disabled="true">Nuevo Miembro</i>
+        </button>
+        {% else %}
+        <button type="button" class="btn btn-primary pull-right" data-toggle="modal"  data-target="#modal-agregar" >Nuevo Miembro</i>
+        </button>
+        {% endif %}  
+
+        
+      </div>      
+      <!-- /.box-header -->
+      <div class="box-body">
+        <table id="example1" class="table table-bordered table-striped">
+          <thead>
+            <tr>                    
+              <th>Miembro</th>
+              <th>Descripción</th>
+              <th>Rol</th>
+              <th>Opciones</th>                                       
+            </tr>
+          </thead>
+          <tbody>
+            {% if lista_responsables %}
+            {% for responsable in lista_responsables %}
+            <tr>                  
+              <td>{{ responsable.responsble_nombre }}</td>
+              <td>{{ responsable.responsble_descripcion }}</td>
+              <td>{{ responsable.rol.rol_nombre }}</td>
+              <td>
+
+                {% if proyecto.proyecto_fin_status %}
+                <button type="button" class="btn btn-default" data-toggle="modal-editar" onclick="abrir_modal_editar('{{ responsable.responsable_id }}','{{ responsable.responsble_nombre }}', '{{ responsable.responsble_descripcion }}','{{ responsable.rol.rol_id }}');" data-target="#modal-editar" disabled="true"><i class="fa fa-edit"></i>
+                </button>
+
+
+                <button type="button" class="btn btn-danger" data-toggle="#modal_eliminar" onclick="abrir_modal_eliminar('{{ responsable.responsble_nombre }}', '{{ responsable.responsable_id }}')" data-target="#modal_eliminar" disabled="true"><i class="fa fa-trash-o danger"></i>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-default" data-toggle="modal-editar" onclick="abrir_modal_editar('{{ responsable.responsable_id }}','{{ responsable.responsble_nombre }}', '{{ responsable.responsble_descripcion }}','{{ responsable.rol.rol_id }}');" data-target="#modal-editar"><i class="fa fa-edit"></i>
+                </button>
+
+
+                <button type="button" class="btn btn-danger" data-toggle="#modal_eliminar" onclick="abrir_modal_eliminar('{{ responsable.responsble_nombre }}', '{{ responsable.responsable_id }}')" data-target="#modal_eliminar"><i class="fa fa-trash-o danger"></i>
+                </button>
+                {% endif %} 
+
+
+
+                
+              </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+              <td></td>
+              <td>Aun no cuentas con un equipo de gestión de riesgos.</td>
+              <td></td>
+              <td></td>                  
+            </tr>
+            {% endif %} 
+          </tbody>
+          <tfoot>
+            <tr>                 
+              <th>Miembro</th>
+              <th>Descripción</th>
+              <th>Rol</th>
+              <th>Opciones</th>    
+            </tr>
+          </tfoot>
+        </table>
+      </div>    
+  </div>
+
+  <!-- valores de impacto -->
+  <div class="box box-primary">
+    <div class="box-header">
+      <label data-toggle="tooltip" data-placement="top" title="En esta sección podrá administrar las categorías de probabilidad e impacto de los riesgos del proyecto."><h3 class="box-title"><strong>Definicion del impacto y la probabilidad &nbsp  &nbsp</strong></h3></label>      
+    </div>      
+    <div class="box-body">
+      <form class="form-horizontal" id="impacto_form" action="/mi_proyecto/{{proyecto.proyecto_id}}/planificar_proyecto/actualizar_definiciones/" method="POST">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-md-6">
+          <h5><b>Categorías de impacto:</b></h5>
+              <div class="box-body" id="cont_impactos">
+              {% if impactos %}
+                {% for impacto in impactos %}
+                <div class="form-group">
+                  <div class="col-xs-5">
+                    <input type="text" class="form-control" name="impacto_nombre_{{ forloop.counter }}" value="{{impacto.impacto_categoria}}" maxlength="70" required />
+                  </div>
+                  <div class="col-xs-3">
+                    <input type="number" class="form-control" name="impacto_valor_{{ forloop.counter }}" value="{{impacto.impacto_valor}}" min="1" required />
+                  </div>
+                  <a href="#" class="remove_field">Eliminar</a>
+                </div>
+                {% endfor%}
+              {% endif %}
+              </div>
+            <div class="box-footer">
+              <button class="btn btn-default" id="add_button_impacto" >Agregar</button>
+            </div>
+        </div>
+        <div class="col-md-6">
+          <h5><b>Categorías de probabilidad:</b></h5>
+              <div class="box-body" id="cont_probabilidad">
+              {% if probabilidades %}
+                {% for propabilidad in probabilidades %}
+                <div class="form-group">
+                  <div class="col-xs-5">
+                    <input type="text" class="form-control" name="propabilida_nombre_{{ forloop.counter }}" value="{{propabilidad.propabilidad_categoria}}" maxlength="70"  required />
+                  </div>
+                  <div class="col-xs-3">
+                    <input type="number" class="form-control" name="propabilida_valor_{{ forloop.counter }}" value="{{propabilidad.propabilidad_valor}}" min="1" required />
+                  </div>
+                  <a href="#" class="remove_field">Eliminar</a>
+                </div>
+                {% endfor%}
+              {% endif %}
+              </div>
+            <div class="box-footer">
+              <button class="btn btn-default" id="add_button_probabilidad">Agregar</button>
+            </div>
+        </div>
+      </div>
+      <div class="box-footer">
+         {% if proyecto.proyecto_fin_status %}
+           <button type="submit" class="btn btn-primary pull-right" disabled="true">Confirmar</button>
+          {% else %}
+           <button type="submit" class="btn btn-primary pull-right">Confirmar</button>
+          {% endif %}
+        
+      </div>
+    </div>
+    </form>
+  </div>
+  <!-- ./valores de impacto -->
+  <!-- clasificacion del riesgo -->
+  <div class="box box-primary">
+    <div class="box-header">
+       <label data-toggle="tooltip" data-placement="top" title="En esta sección podrá administrar las categorías de evaluación de los riesgos del proyecto."><h3 class="box-title"><strong>Definición de la evaluación del Riesgo</strong></h3></label>  
+      
+    </div>      
+    <div class="box-body">
+      <form class="form-horizontal" method="post" action="/mi_proyecto/{{ proyecto.proyecto_id }}/planificar_proyecto/actualizar_clasificacion_riesgo/">
+        {% csrf_token %}
+        <div class="box-body" id="cont_clasificacion">
+        {% if clasificacion_riesgo %}
+          {% for clasificacion in clasificacion_riesgo %}
+          <div class="row" >
+            <div class="col-md-3">
+              <input type="text" class="form-control" name="clasificacion_nombre_{{ forloop.counter }}" value="{{clasificacion.clasificacion_riesgo_nombre}}" maxlength="70" required />
+            </div>   
+            <div class="col-md-4">
+              <div class="input-group my-colorpicker2 colorpicker-element">
+              <input type="text" class="form-control" name="clasificacion_color_{{ forloop.counter }}" value="{{clasificacion.clasificacion_color}}" required />
+              <div class="input-group-addon">
+                <i style="background-color: {{clasificacion.clasificacion_color}} "></i>
+              </div>
+              </div> 
+            </div>                                            
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="input_min_{{ forloop.counter }}" class="col-sm-2 control-label">De</label>
+                <div class="col-sm-10">
+                <input type="number" id="input_min_{{ forloop.counter }}" class="form-control" name="clasificacion_min_{{ forloop.counter }}" value="{{clasificacion.clasificacion_riesgo_min}}" required />
+                </div>              
+              </div>          
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="input_max_{{ forloop.counter }}" class="col-sm-2 control-label">a</label>
+                <div class="col-sm-10">
+                  <input type="number" class="form-control" id="input_max_{{ forloop.counter }}" name="clasificacion_max_{{ forloop.counter }}" value="{{clasificacion.clasificacion_riesgo_max}}" required />
+                </div>
+              </div>
+            </div>
+            <a href="#" class="remove_field" align="left">Eliminar</a>
+          </div>
+          {% endfor%}
+          {% endif %}
+        </div>
+        <div class="box-footer">
+          <button class="btn btn-default" id="add_button_clasificacion" >Agregar</button>
+          {% if proyecto.proyecto_fin_status %}
+           <button class="btn btn-primary pull-right" type="submit" disabled="true">Confirmar</button>
+          {% else %}
+           <button class="btn btn-primary pull-right" type="submit">Confirmar</button>
+          {% endif %}           
+        </div>
+      </form>
+    </div>    
+  </div>
+  <!-- ./clasificacion del riesgo -->
+</div>
+</section>
+
+<!-- /.modal-agregar -->
+<div class="modal fade" id="modal-agregar">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Agregar Miembro del equipo de gestión de riesgos</h4>
+        </div>
+        <div class="box-body">
+        {% if lista_roles|length > 0 %}
+          <form  action="/mi_proyecto/registrar_responsable/" method="post">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group"> 
+                  <label >Nombre </label>
+                  <input type="text" class="form-control" id="nombre_responsable" name="nombre_responsable" required>
+                </div>
+                 <div class="form-group">
+                  <label >Rol </label>
+                  {% if lista_roles %}
+                  <select class="form-control select2" id="rol_id" name="rol_id">
+                  {% for rol in lista_roles %}
+                  <option value="{{ rol.rol_id }}">
+                    {{ rol.rol_nombre }}
+                  </option>
+                  {% endfor %} 
+                </select>
+                {% endif %} 
+                </div>                
+            </div>
+            <!-- /.col -->
+            <div class="col-md-6">             
+              <div class="form-group">
+                <label>Descripción</label>
+               <textarea class="form-control" rows="4"  id="descripcion_responsable" name="descripcion_responsable"></textarea>
+                </div>
+                <input type="text" class="form-control" id="proyecto_id" name="proyecto_id" value="{{ proyecto.proyecto_id }}" style="visibility:hidden">                
+              </div>            
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary pull-left" data-dismiss="modal">Cerrar</button>
+              <button type="submit" class="btn btn-primary pull-right">Agregar</button>
+            </div>
+          <!-- /.row -->
+        </form>      
+        {% else %}
+        <div class="alert alert-info alert-dismissible">                
+          <h4><i class="icon fa fa-info"></i>  Atencion</h4> Hasta el momento no has definido roles para los miembros de tu equipo<br/>Para definir los roles dale clic <a href="/roles_equipo/">aqui</a>
+      </div>
+        {% endif %} 
+        </div>       
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<!-- /.modal-editar -->
+<div class="modal fade" id="modal-editar">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Editar Miembro del equipo</h4>
+        </div>
+        <div class="box-body">
+         <form  action="/mi_proyecto/editar_responsable/" method="post">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label >Nombre </label>
+                <input type="text" class="form-control" id="responsable_nombre" name="responsable_nombre" required>
+              </div>
+               <div class="form-group">
+                <label >Rol </label>
+                {% if lista_roles %}
+              <select class="form-control select2" id="rol_id_e" name="rol_id">
+                {% for rol in lista_roles %}
+                <option value="{{ rol.rol_id }}">
+                  {{ rol.rol_nombre }}
+                </option>
+                {% endfor %} 
+              </select>
+              {% endif %} 
+              </div>                
+            </div>
+            <!-- /.col -->
+            <div class="col-md-6">             
+              <div class="form-group">
+                <label>Descripción</label>
+                <textarea class="form-control" rows="4"  id="responsable_descripcion" name="responsable_descripcion"></textarea>
+              </div>
+              <input type="text" class="form-control" id="responsable_id" name="responsable_id" style="visibility:hidden">                
+              <input type="text" class="form-control" id="proyecto_id_editar" name="proyecto_id_editar" value="{{ proyecto.proyecto_id }}" style="visibility:hidden">                
+            </div>            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary pull-left" data-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-primary pull-right">Actualizar</button>
+          </div>
+          <!-- /.row -->
+        </form>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<!-- /.modal-eliminar -->
+
+<div class="modal modal-danger fade" id="modal_eliminar" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title"> Eliminar </h4>
+        </div>
+        <form  action="/mi_proyecto/eliminar_responsable/" method="post">
+          {% csrf_token %}
+          <div class="modal-body">
+
+            <p id="contenido_modal">&hellip;</p>
+            <h2 id="responsable"></h2>           
+            <input type="text" class="form-control" id="responsable_id_e" name="responsable_id" style="visibility:hidden">
+            <input type="text" class="form-control" id="proyecto_id_el" name="proyecto_id_el" value="{{ proyecto.proyecto_id}}" style="visibility:hidden">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-outline">Eliminar</button>
+          </div>
+        </form>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block organigrama_down %}
+
+   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
+<script type="text/javascript" src="{% static 'risk_project/plugins/org-chart/js/jquery.mockjax.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'risk_project/plugins/org-chart/js/html2canvas.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'risk_project/plugins/org-chart/js/jspdf.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'risk_project/plugins/org-chart/js/jquery.orgchart.js' %}"></script>
+<!-- bootstrap color picker -->
+<script src="{% static 'risk_project/bower_components/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js' %}"></script>
+<script type="text/javascript">
+
+
+  /* ############################
+      Variables globales
+    ###########################
+  */
+  // los datos de la rbs personal
+  var edr_pmbok_static = {"name":"EDR","title":"Estructura desglosada de riesgos","mi_id":"RBS_1","mi_tipo":0,"children":[{"name":"1.1","title":"Riesgo técnico","mi_id":38,"mi_tipo":1,"className":"middle-level","children":[{"name":"1.1.1","title":"Definición del alcance","mi_id":181,"mi_tipo":2,"className":"low-level"},{"name":"1.1.2","title":"Definición de los requisitos","mi_id":182,"mi_tipo":2,"className":"low-level"},{"name":"1.1.3","title":"Estimaciones, supuestos y restricciones","mi_id":183,"mi_tipo":2,"className":"low-level"},{"name":"1.1.4","title":"Procesos técnicos","mi_id":184,"mi_tipo":2,"className":"low-level"},{"name":"1.1.5","title":"Tecnología","mi_id":185,"mi_tipo":2,"className":"low-level"},{"name":"1.1.6","title":"Interfaces técnicas","mi_id":186,"mi_tipo":2,"className":"low-level"}]},{"name":"1.2","title":"Riesgo de gestión","mi_id":39,"mi_tipo":1,"className":"middle-level","children":[{"name":"1.2.1","title":"Dirección de proyectos","mi_id":187,"mi_tipo":2,"className":"low-level"},{"name":"1.2.2","title":"Dirección del programa/portafolio","mi_id":188,"mi_tipo":2,"className":"low-level"},{"name":"1.2.3","title":"Gestión de las operaciones","mi_id":189,"mi_tipo":2,"className":"low-level"},{"name":"1.2.4","title":"Organización","mi_id":190,"mi_tipo":2,"className":"low-level"},{"name":"1.2.5","title":"Dotación de recursos","mi_id":191,"mi_tipo":2,"className":"low-level"},{"name":"1.2.6","title":"Comunicación","mi_id":192,"mi_tipo":2,"className":"low-level"}]},{"name":"1.3","title":"Riesgo comercial","mi_id":40,"mi_tipo":1,"className":"middle-level","children":[{"name":"1.3.1","title":"Términos y condiciones contractuales","mi_id":193,"mi_tipo":2,"className":"low-level"},{"name":"1.3.2","title":"Contratación interna","mi_id":194,"mi_tipo":2,"className":"low-level"},{"name":"1.3.3","title":"Proveedores y vendedores","mi_id":195,"mi_tipo":2,"className":"low-level"},{"name":"1.3.4","title":"Subcontratos","mi_id":196,"mi_tipo":2,"className":"low-level"},{"name":"1.3.5","title":"Estabilidad de los clientes","mi_id":197,"mi_tipo":2,"className":"low-level"},{"name":"1.3.6","title":"Asociaciones y empresas conjuntas","mi_id":198,"mi_tipo":2,"className":"low-level"}]},{"name":"1.4","title":"Riesgo externo","mi_id":41,"mi_tipo":1,"className":"middle-level","children":[{"name":"1.4.1","title":"Legislación","mi_id":199,"mi_tipo":2,"className":"low-level"},{"name":"1.4.2","title":"Tasas de cambio","mi_id":200,"mi_tipo":2,"className":"low-level"},{"name":"1.4.3","title":"Sitios/Instalaciones","mi_id":201,"mi_tipo":2,"className":"low-level"},{"name":"1.4.4","title":"Ambiental/clima","mi_id":202,"mi_tipo":2,"className":"low-level"},{"name":"1.4.5","title":"Competencia","mi_id":203,"mi_tipo":2,"className":"low-level"},{"name":"1.4.6","title":"Normativo","mi_id":204,"mi_tipo":2,"className":"low-level"}]}]};
+
+  var rbs_proyecto = JSON.parse("{{rbs_proyecto|escapejs}}"); 
+  //console.log(rbs_proyecto);
+
+  var rbs_sugerida = JSON.parse("{{rbs_sugerida|escapejs}}"); 
+  //console.log(rbs_sugerida);
+
+  $(function() {
+    pintar_edr_propio();
+    pintar_edr_sugerida();
+    pintar_edr_pmbok();    
+  });
+
+  function pintar_edr_pmbok() {
+    $('#chart-container_3').orgchart({
+      'data': edr_pmbok_static,
+      'nodeContent': 'title',
+      'nodeID': 'mi_id',
+      'verticalLevel': 3,
+      'pan': true,
+      'zoom': true,          
+    });
+  }
+
+  function pintar_edr_propio() {
+    if(rbs_proyecto.length > 0){
+      $('#chart-container_1').orgchart({
+        'data': traducir_rbs(rbs_proyecto),
+        'nodeContent': 'title',
+        'nodeID': 'mi_id',
+        'verticalLevel': 3,
+        'pan': true,
+        'zoom': true,      
+        //'exportButton': true,
+        //'exportFileextension': 'png',
+        //'exportFilename': 'MyOrgChart',
+      });
+    }else{
+      let cartel = document.getElementById("cartel_propio");
+      cartel.removeAttribute("hidden");      
+    }
+  }
+
+function pintar_edr_sugerida() {
+  if(rbs_sugerida.length > 0){
+    $('#chart-container_2').orgchart({
+      'data': traducir_rbs(rbs_sugerida),
+      'nodeContent': 'title',
+      'nodeID': 'mi_id',
+      'verticalLevel': 3,
+      'pan': true,
+      'zoom': true,          
+    });
+  }else{
+    let cartel = document.getElementById("cartel_sugerido");
+    cartel.removeAttribute("hidden");      
+  }
+}
+ function traducir_rbs(rbs) {
+    contenido = [];
+    let i = 1;
+    rbs.forEach((item) => {
+      let ii = "1." + i;
+      let categoria = {
+        'name': ii,
+        'title': item['categoria']['categoria_nombre'],
+        'mi_id': item['categoria']['categoria_id'],
+        'mi_tipo': 1,
+        "className":'middle-level'
+      };
+      children = [];
+      let j = 1;
+      if (item['subcategorias']) {
+        item['subcategorias'].forEach((sub_item) => {
+          children.push({
+            'name': ii + "." + j,
+            'title': sub_item["sub_categoria_nombre"],
+            'mi_id': sub_item["sub_categoria_id"],
+            'mi_tipo': 2,
+            'className':'low-level'
+          });
+          j = j + 1;
+        });
+      }
+      categoria["children"] = children;
+      contenido.push(categoria);
+      i = i + 1;
+    });
+
+    return {
+      'name': 'RBS',
+      'title': 'Estructura desglosada de riesgos',
+      'mi_id': "RBS_1",
+      'mi_tipo': 0,
+      'children': contenido
+    }
+  }
+</script>
+
+{% endblock %}
+
+
+{% block mis_scrtips_riesgos %}
+{% load static %}
+<script src="{% static 'risk_project/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+
+
+<script src="{% static 'risk_project/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+
+
+
+<!-- AdminLTE for demo purposes -->
+<script src="{% static 'risk_project/dist/js/demo.js' %}"></script>
+
+  <script>
+  $(function () {
+    $('#example1').DataTable(
+      {
+     "language": {
+         "sProcessing":    "Procesando...",
+         "sLengthMenu":    "Mostrar _MENU_ registros",
+         "sZeroRecords":   "No se encontraron resultados",
+         "sEmptyTable":    "Ningún dato disponible en esta tabla",
+         "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+         "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+         "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+         "sInfoPostFix":   "",
+         "sSearch":        "Buscar:",
+         "sUrl":           "",
+         "sInfoThousands":  ",",
+         "sLoadingRecords": "Cargando...",
+         "oPaginate": {
+             "sFirst":    "Primero",
+             "sLast":    "Último",
+             "sNext":    "Siguiente",
+             "sPrevious": "Anterior"
+         },
+         "oAria": {
+             "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+             "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+         }
+     }
+    }); 
+
+  /*
+   * Creacion dinamica inputs 
+   */
+    
+  var max_fields = 6;
+  var min_fields = 3;
+
+  var div_impactos = $("#cont_impactos");
+  var div_probabilidades = $("#cont_probabilidad");
+  var div_clasificaciones = $("#cont_clasificacion");
+
+  var add_button_impacto      = $("#add_button_impacto");
+  var add_button_probabilidad = $("#add_button_probabilidad");
+  var add_button_clasificacion = $("#add_button_clasificacion");
+  var button_definiciones = $("#button_definiciones");
+  var button_clasificacion = $("#button_clasificacion")
+
+  var cant_impactos = parseInt('{{impactos|length}}');
+  var cant_impactos_index = cant_impactos;
+  var cant_probabilidades = parseInt('{{probabilidades|length}}');
+  var cant_probabilidades_index = cant_probabilidades;
+  var cant_clasificaion = parseInt('{{clasificacion_riesgo|length}}');
+  var cant_clasificaion_index = cant_clasificaion;
+  /*
+   * Agrego los listener a los botones
+   */
+
+  $(add_button_impacto).click(function(e){
+    e.preventDefault();
+    if(cant_impactos < max_fields){
+      cant_impactos++;
+      cant_impactos_index++;
+      let str = '<div class="form-group"><div class="col-xs-5"><input type="text" class="form-control" name="impacto_nombre_'+cant_impactos_index+'" placeholder="Nombre de impacto" maxlength="70"  required /></div><div class="col-xs-3"><input type="number" class="form-control" name="impacto_valor_'+cant_impactos_index+'" min="1" required /></div><a href="#" class="remove_field">Eliminar</a></div>';
+      let html = $.parseHTML(str);
+      $(div_impactos).append(html);
+    }else{
+      alert("No pueden existir más de seis(6) impactos.");
+    }
+  });
+  
+  $(add_button_probabilidad).click(function(e){
+    e.preventDefault();
+    if(cant_probabilidades < max_fields){
+      cant_probabilidades++;
+      cant_probabilidades_index++;
+      let str = '<div class="form-group"><div class="col-xs-5"><input type="text" class="form-control" name="propabilida_nombre_'+cant_probabilidades_index+'" placeholder="Nombre de probabilidad" maxlength="70" required /></div><div class="col-xs-3"><input type="number" class="form-control" name="propabilida_valor_'+cant_probabilidades_index+'" min="1" required /></div><a href="#" class="remove_field">Eliminar</a></div>';
+      let html = $.parseHTML(str);
+      $(div_probabilidades).append(html);
+    }else{
+      alert("No pueden existir más de seis(6) probabilidades.");
+    }
+  });
+
+
+  $(add_button_clasificacion).click(function(e){
+    e.preventDefault();
+    if(cant_clasificaion < max_fields){
+      cant_clasificaion++;
+      cant_clasificaion_index++;
+      let randomColor = Math.floor(Math.random()*16777215).toString(16);
+      let str = '<div class="row" ><div class="col-md-3"><input type="text" class="form-control" name="clasificacion_nombre_'+cant_clasificaion_index+'" placeholder="Nueva clasificación" maxlength="70" required/></div><div class="col-md-4"><div class="input-group my-colorpicker2 colorpicker-element"><input type="text" class="form-control" name="clasificacion_color_'+cant_clasificaion_index+'" value="#'+randomColor+'" required/><div class="input-group-addon"><i style="background-color:#'+randomColor+'"></i></div></div> </div> <div class="col-md-2"> <div class="form-group"> <label for="input_min_'+cant_clasificaion_index+'" class="col-sm-2 control-label">De</label> <div class="col-sm-10"> <input type="number" id="input_min_'+cant_clasificaion_index+'" class="form-control" name="clasificacion_min_'+cant_clasificaion_index+'" required /> </div> </div> </div> <div class="col-md-2"> <div class="form-group"> <label for="input_max_'+cant_clasificaion_index+'" class="col-sm-2 control-label">a</label> <div class="col-sm-10"> <input type="number" class="form-control" id="input_max_'+cant_clasificaion_index+'" name="clasificacion_max_'+cant_clasificaion_index+'" required /> </div> </div> </div> <a href="#" class="remove_field" align="left">Eliminar</a> </div>';
+        let html = $.parseHTML(str);
+      $(div_clasificaciones).append(html);
+    }else{
+        alert("No pueden existir más de seis(6) clasificaciones de riesgo.");
+      }
+  });
+
+    $(div_impactos).on("click",".remove_field", function(e){
+      e.preventDefault();
+      if(cant_impactos > 3){
+        $(this).parent('div').remove(); cant_impactos--;  
+      }else{
+        alert("No pueden existir menos de tres(3) impactos.");
+      } 
+    });
+        
+    
+    $(div_probabilidades).on("click",".remove_field", function(e){
+      e.preventDefault();
+      if(cant_probabilidades > 3){
+        $(this).parent('div').remove(); cant_probabilidades--;
+      }else{
+        alert("No pueden existir menos de tres(3) probabilidades.");
+      }
+    });
+
+    $(div_clasificaciones).on("click",".remove_field", function(e){
+      e.preventDefault();
+      if(cant_clasificaion > 3){
+        $(this).parent('div').remove(); cant_clasificaion--;
+      }else{
+        alert("No pueden existir menos de tres(3) clasificaciones de riesgo.");
+      }
+    });
+
+
+   /* $("#impacto_form").submit(function(e) {
+      e.preventDefault();
+      ee = $("#impacto_form");
+      console.log(ee.serialize());
+    })*/
+
+    //color picker with addon
+    $('.my-colorpicker2').colorpicker();
+
+  });
+
+</script>
+
+
+
+
+ <script>
+function abrir_modal_eliminar(nombre, id) {
+
+        $("#modal_eliminar").modal('show');
+
+        document.getElementById("contenido_modal").innerHTML = "Estas seguro que desea eliminar este miembro del equipo de gestión de riesgos.";
+        document.getElementById("responsable").innerHTML = " "+nombre;
+        var input_id = document.getElementById("responsable_id_e");       
+        input_id.value = id;
+        
+        return false;
+    };
+
+function abrir_modal_editar(id, nombre, descripcion, rol_id_e) {            
+  $("#modal-editar").modal('show');
+  var input_id = document.getElementById("responsable_id");
+  var input_nombre = document.getElementById("responsable_nombre");
+  var input_rol = document.getElementById("rol_id_e");
+  document.getElementById("responsable_descripcion").innerHTML = ""+descripcion;
+  input_id.value = id;
+  input_nombre.value = nombre;      
+  input_rol.value = rol_id_e;
+  return false;
+};
+
+
+
+
+</script>
+
+{% endblock %}

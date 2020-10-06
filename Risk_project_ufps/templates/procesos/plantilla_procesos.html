@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+{% if user.is_authenticated %}
+<head>
+  {% load static %}
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>
+
+    {% block title %}{% endblock %}
+
+  </title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <!-- Bootstrap 3.3.7 -->
+  <link rel="stylesheet" href="{% static 'risk_project/bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'risk_project/bower_components/font-awesome/css/font-awesome.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="{% static 'risk_project/bower_components/Ionicons/css/ionicons.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'risk_project/dist/css/AdminLTE.min.css' %}">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="{% static 'risk_project/dist/css/skins/_all-skins.min.css' %}">
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/jdenticon@3.0.1" async></script>
+  <!-- Inicia el contenido de las librerias del orgchart -->
+  {% block organigrama_up %}
+
+
+  {% endblock %}
+<!-- Termina sección Contenido -->
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- Google Font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+</head>
+<!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+<body class="hold-transition skin-blue layout-top-nav">
+<div class="wrapper">
+
+  <header class="main-header">
+    <nav class="navbar navbar-static-top" style="width: 100%; left: 0; top: 0; margin-bottom: 100px; position: fixed;">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="" class="navbar-brand"><b>RiskProject</b>UFPS</a>
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+            <i class="fa fa-bars"></i>
+          </button>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/inicio/">Inicio</span></a></li>
+            <li><a href="/mi_proyecto/{{ proyecto.proyecto_id }}/">Proyecto</span></a></li>
+            <li><a href="/recursos/{{ proyecto.proyecto_id }}/">Recursos</span></a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Procesos <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+
+                <li><a href="/mi_proyecto/{{ proyecto.proyecto_id }}/planificar/">Planificar</a></li>
+                <li class="divider"></li>
+                <li><a href="/mi_proyecto/{{ proyecto.proyecto_id }}/identificar/">Identificar Riesgos</a></li>
+                <li class="divider"></li>
+                <li><a href="/mi_proyecto/{{ proyecto.proyecto_id }}/evaluar/">Evaluar Riesgos</a></li>
+                <li class="divider"></li>
+                <li><a href="/mi_proyecto/{{ proyecto.proyecto_id }}/planificar_respuestas/">Planificar Respuestas</a></li>
+                <li class="divider"></li>
+                <li><a href="/mi_proyecto/{{ proyecto.proyecto_id }}/controlar_riesgos/">Controlar Riesgos</a></li>
+                <li class="divider"></li>
+                <li><a href="/mi_proyecto/{{ proyecto.proyecto_id }}/cerrar_proyecto/">Cierre del proyecto</a></li>
+
+              </ul>
+            </li>
+            {% if linea_base %}
+              <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Histórico Lineas Base<span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {% for linea in linea_base %}
+                <li><a href="/mi_proyecto/{{ proyecto.proyecto_id }}/linea_base/{{ linea }}/">Linea Base de la Gestión de Riesgos {{ linea }}</a></li>
+                <li class="divider"></li>
+                {% endfor %}
+              </ul>
+            </li>
+            {% endif %}
+          </ul>
+        </div>        
+        <!-- /.navbar-collapse -->
+
+        <!-- Navbar Right Menu -->
+        <div class="navbar-custom-menu">
+          <ul class="nav navbar-nav">
+            <!-- Messages: style can be found in dropdown.less-->
+
+
+            <!-- Notifications Menu -->
+            <li class="dropdown notifications-menu">
+              <!-- Menu toggle button -->
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <i class="fa fa-bell-o"></i>
+                <span class="label label-warning">10</span>
+              </a>
+              <ul class="dropdown-menu">
+                <li class="header">You have 10 notifications</li>
+                <li>
+                  <!-- Inner Menu: contains the notifications -->
+                  <ul class="menu">
+                    <li><!-- start notification -->
+                      <a href="#">
+                        <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                      </a>
+                    </li>
+                    <!-- end notification -->
+                  </ul>
+                </li>
+                <li class="footer"><a href="#">View all</a></li>
+              </ul>
+            </li>
+
+
+            <li class="dropdown user user-menu">
+              <!-- Menu Toggle Button -->
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <!-- The user image in the navbar
+                <img src="{% static 'risk_project/dist/img/user2-160x160.jpg' %}" class="user-image" alt="User Image">-->
+                <svg data-jdenticon-value="{{ user.first_name }}" width="39" height="39" class="user-image">
+                  {{ user.first_name }}
+                </svg> 
+                <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                <span class="hidden-xs">{{ user.first_name }}</span>
+              </a>
+              <ul class="dropdown-menu">
+                <!-- The user image in the menu -->
+                <li class="user-header">
+                 <!--<img src="{% static 'risk_project/dist/img/user2-160x160.jpg' %}" class="img-circle" alt="User Image">-->
+                 <svg data-jdenticon-value="{{ user.first_name }}" width="80" height="80" class="img-circle">
+                  {{ user.first_name }}
+                </svg> 
+                  <p>
+                    {{ user.first_name }}                    
+                  </p>
+                </li>             
+                <!-- Menu Footer-->
+                <li class="user-footer">
+                  <div class="pull-left">
+                    <a href="/mi_perfil/" class="btn btn-default btn-flat">Perfil</a>
+                  </div>
+                  <div class="pull-right">
+                    <a href="/accounts/logout/" class="btn btn-default btn-flat">Cerrar sesión</a>
+                  </div>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <!-- /.navbar-custom-menu -->
+      </div>
+      <!-- /.container-fluid -->
+    </nav>
+  </header>
+
+
+
+  <!-- Inicia el contenido de la pagina -->
+  {% block content %}
+
+
+
+
+
+  {% endblock %}
+<!-- Termina sección Contenido -->
+
+
+
+  <footer class="main-footer">
+    <div class="container">
+      <div class="pull-right hidden-xs">
+        <b>Version</b> 1.0
+      </div>
+      <strong>Copyright &copy; 2019-2020 <a href="https://adminlte.io">RiskProjectUFPS</a>.</strong> All rights
+      reserved.
+    </div>
+    <!-- /.container -->
+  </footer>
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+<script src="{% static 'risk_project/bower_components/jquery/dist/jquery.min.js' %}"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="{% static 'risk_project/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+<!-- SlimScroll -->
+<script src="{% static 'risk_project/bower_components/jquery-slimscroll/jquery.slimscroll.min.js' %}"></script>
+<!-- FastClick -->
+<script src="{% static 'risk_project/bower_components/fastclick/lib/fastclick.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'risk_project/dist/js/adminlte.min.js' %}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{% static 'risk_project/dist/js/demo.js' %}"></script>
+<!--
+<script src="{% static 'risk_project/dist/js/risk_ufps/nuevo_riesgo.js' %}"></script>-->
+
+<!-- Inicia el contenido de las librerias del orgchart -->
+{% block organigrama_down %}
+
+
+{% endblock %}
+
+{% block mis_scrtips_riesgos %}
+
+<!-- Los scritps necesarios para cada pagina -->
+
+{% endblock %}
+
+<!-- Termina sección Contenido -->
+</body>
+{% else %}
+<section class="content">
+      <div class="error-page">
+        <h2 class="headline text-yellow"> 404</h2>
+
+        <div class="error-content">
+          <h3><i class="fa fa-warning text-yellow"></i> Oops! Pagina no dispobile, por favor inicia sesión para acceder a nuestros servicios.</h3>
+
+          
+
+          
+        </div>
+        <!-- /.error-content -->
+      </div>
+      <!-- /.error-page -->
+    </section>
+{% endif %}
+</html>

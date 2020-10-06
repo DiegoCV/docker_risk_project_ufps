@@ -1,0 +1,329 @@
+{% extends "procesos/plantilla_procesos.html" %}
+
+{% block title %} RiskProject UFPS | {{ proyecto.proyecto_nombre }} {% endblock %}
+
+
+{% block content %}
+ 
+{% load static %}
+
+{% block scripts_actividades_xml %}
+<script type="text/javascript" src="{% static 'risk_project/dist/js/risk_ufps/actividades/risk.js' %}"></script>
+<script type="text/javascript" src="{% static 'risk_project/dist/js/risk_ufps/actividades/util_risk.js' %}"></script>
+<script type="text/javascript" src="{% static 'risk_project/dist/js/risk_ufps/actividades/xml2json.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/jdenticon@3.0.1" async></script>
+{% endblock %} 
+
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="container">
+    <section class="content-header" style="margin-top: 70px;">
+      <h1>
+        {{ proyecto.proyecto_nombre }}
+        <small>Panel de Control</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Inicio</a></li>
+        <li class="active">{{ proyecto.proyecto_nombre }}</li>
+      </ol>
+      {% if mensaje %}
+    <div class="callout callout-warning">
+      <h4>Registro Exitoso</h4>
+      {{mensaje}}      
+    </div>
+    {% endif %}
+    </section>
+    </section>
+
+    <section class="content">
+      <div class="col-md-12">
+         <div class="col-md-3">
+
+          <!-- Profile Image -->
+          <div class="box box-primary">
+            <div class="box-body box-profile" align="center">
+              <svg data-jdenticon-value="{{ proyecto.proyecto_nombre }}" width="100" height="100" class="img-circle" >
+                  {{ proyecto.proyecto_nombre }}
+                </svg>
+            
+
+              <h3 class="profile-username text-center">{{ proyecto.proyecto_nombre }}</h3>
+
+              <p class="text-muted text-center">{{ proyecto.sector.sector_nombre }}</p>
+
+              <p class="text-muted text-center">{{ proyecto.proyecto_fecha_inicio }}</p>
+
+             
+            </div>
+            <!-- /.box-body -->
+          </div>
+          
+        </div>
+
+
+        <div class="col-md-9">
+       <div class="box">
+
+        <div class="nav-tabs-custom">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#perfil" data-toggle="tab">Información</a></li>
+
+            <li><a href="#editar_perfil" data-toggle="tab">Editar</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="active tab-pane" id="perfil">
+
+             <form class="form-horizontal">
+
+              <div class="form-group">
+                <label for="inputName" class="col-sm-2 control-label">Nombre</label>
+
+                <div class="col-sm-10">
+                  <h5>{{ proyecto.proyecto_nombre }}</h5>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputEmail" class="col-sm-2 control-label">Objetivo</label>
+
+                <div class="col-sm-10">
+                  <h5>{{ proyecto.proyecto_objetivo }}</h5>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputName" class="col-sm-2 control-label">Descripción</label>
+
+                <div class="col-sm-10">
+                  <h5>{{ proyecto.proyecto_descripcion }}</h5>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputExperience" class="col-sm-2 control-label">Alcance</label>
+
+                <div class="col-sm-10">
+                  <h5>{{ proyecto.proyecto_alcance }}</h5>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputSkills" class="col-sm-2 control-label">Presupuesto</label>
+
+                <div class="col-sm-10">
+                  <h5>{{ proyecto.proyecto_presupuesto|floatformat }}</h5>
+                </div>
+              </div> 
+              <div class="form-group">
+                <label for="inputSkills" class="col-sm-2 control-label">Sector</label>
+
+                <div class="col-sm-10">
+                  <h5>{{ proyecto.sector.sector_nombre }}</h5>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputSkills" class="col-sm-2 control-label">Fecha de inicio</label>
+
+                <div class="col-sm-10">
+                  <h5>{{ proyecto.proyecto_fecha_inicio }}</h5>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputSkills" class="col-sm-2 control-label">Duración</label>
+
+                <div class="col-sm-10">
+                  <h5>{{ duracion }}</h5>
+                </div>
+              </div>                  
+            </form>
+
+
+          </div>
+          <div class="tab-pane" id="editar_perfil">
+            <form class="form-horizontal" id="form_proyecto">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="inputName" class="col-sm-2 control-label">Nombre</label>
+
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="proyecto_nombre" name="proyecto_nombre" value="{{ proyecto.proyecto_nombre }}" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputEmail" class="col-sm-2 control-label">Objetivo</label>
+
+                <div class="col-sm-10">
+                  <textarea class="form-control" rows="2" name="proyecto_objetivo" required>{{ proyecto.proyecto_objetivo }}</textarea>
+                                     
+                </div>
+              </div>                  
+              <div class="form-group">
+                <label for="inputExperience" class="col-sm-2 control-label">Descripción</label>
+
+                <div class="col-sm-10">
+                   <textarea class="form-control" rows="2" name="proyecto_descripcion" required>{{ proyecto.proyecto_descripcion }}</textarea>                                        
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputSkills" class="col-sm-2 control-label">Alcance</label>
+
+                <div class="col-sm-10">
+                  <textarea class="form-control" rows="2" name="proyecto_alcance" required>{{ proyecto.proyecto_alcance }}</textarea>                     
+                </div>
+              </div> 
+              <div class="form-group">
+                <label for="inputSkills" class="col-sm-2 control-label">Presupuesto</label>
+
+                <div class="col-sm-10">
+                  <input type="number" class="form-control" id="proyecto_presupuesto" name="proyecto_presupuesto" value='{{ proyecto.proyecto_presupuesto|floatformat }}' required> 
+                  <h5></h5>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputSkills" class="col-sm-2 control-label">Fecha de Inicio</label>
+
+                <div class="col-sm-10">
+                  <div class="input-group date">
+                <div class="input-group-addon">
+                  <i class="fa fa-calendar"></i>
+                </div>
+                <input type="date" class="form-control pull-right" name="proyecto_fecha_inicio" 
+                 value="{{proyecto.proyecto_fecha_inicio|date:'Y-m-d'}}" required>
+                  </div>
+                </div>
+              </div>  
+              <div class="form-group">
+                <label for="inputSkills" class="col-sm-2 control-label">Sector</label>
+                <div class="col-sm-10">
+                 {% if lista_sectores %}
+                 <select class="form-control select2" style="width: 100%;" name="proyecto_sector" id="proyecto_sector" required>
+                  <option value="{{ proyecto.sector.sector_id }}">{{ proyecto.sector.sector_nombre }}</option>
+                  {% for sector in lista_sectores %}                      
+                  <option value="{{ sector.sector_id }}">{{ sector.sector_nombre }}</option>                      
+                  {% endfor %} 
+                </select>
+                {% endif %}
+              </div>
+            </div>  
+            {% if actividades %}            
+
+            {% else %}
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Cronograma del proyecto</label>
+              {% if proyecto.proyecto_fin_status %}
+              <!--<input type="file" id="fileForUpload" accept="text/xml" disabled="true" />-->
+              {% else %}
+              <input type="file" id="fileForUpload" accept="text/xml" />
+              {% endif %}              
+            </div> 
+            {% endif %}
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                {% if proyecto.proyecto_fin_status %}
+                <button type="submit" class="btn btn-warning pull-right" disabled="true">Actualizar</button>
+                {% else %}
+                <button type="submit" class="btn btn-warning pull-right">Actualizar</button>
+                {% endif %}                
+              </div>
+            </div>
+          </form>
+        </div>
+        <!-- /.tab-pane -->
+      </div>
+      <!-- /.tab-content -->
+    </div>
+    <!-- /.nav-tabs-custom -->
+  </div>
+   </div>
+  <!-- /.col -->
+</div>
+
+</div>
+</div>
+
+{% endblock %}
+
+
+{% block mis_scrtips_riesgos %}
+
+<script src="{% static 'risk_project/plugins/sweetalert/sweetalert.js' %}"></script>
+
+<script type="text/javascript">
+
+  {% if actividades %}                                    
+  var flag_actividades = 1;
+  {% else %}
+  var flag_actividades = 0;
+  {% endif %}
+
+$(function() {
+$("#form_proyecto").submit(function(e) {
+    e.preventDefault();
+    var actionurl = "/mi_proyecto/{{ proyecto.proyecto_id }}/";
+    if(flag_actividades == 1){
+      actualizar_proyecto_normal(actionurl);
+    }else{
+      var file = document.getElementById("fileForUpload").files[0];
+      if(file){
+        Swal.fire({
+          title: 'Creando proyecto',
+          html: 'subiendo actividades',
+          timerProgressBar: true,
+          willOpen: () => {
+            Swal.showLoading();
+            obtenerJson(file, function(myJson){
+              setJsonMpp(myJson);
+            });  
+           }
+        });         
+      }else{
+        actualizar_proyecto_normal(actionurl);
+      }
+    }    
+  });
+});
+
+function actualizar_proyecto_normal(actionurl){
+  $.ajax({
+    url: actionurl ,
+    type: 'POST',
+    headers: {'X-CSRFToken': csrftoken},
+    data: $("#form_proyecto").serialize()+"&actividades=False",
+    success: function(data) {
+      Swal.fire(
+        '¡ Registro exitoso !',
+        'el proyecto se ha actualizado',
+        'success'
+      ).then(function () {
+        location.reload();
+      });                             
+    },
+    error: function (jqXhr, textStatus, errorMessage) {
+      console.log(errorMessage);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: '¡ No se pudo registrar el proyecto !',             
+      }).then(function () {
+        location.reload();
+      });                            
+    }
+  });
+}
+
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+</script>
+
+{% endblock %}

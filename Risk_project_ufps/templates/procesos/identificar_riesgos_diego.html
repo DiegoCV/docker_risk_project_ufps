@@ -1,0 +1,283 @@
+{% extends "procesos/plantilla_procesos.html" %}
+
+{% block title %} Proyecto {% endblock %}
+
+
+{% block content %}
+  
+ 
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="container">
+    <section class="content-header">
+      <h1>
+        Proyecto
+        <small>Panel de Control</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Inicio</a></li>
+        <li class="active">Proyecto</li>
+      </ol>
+    </section>
+
+    <section class="content">
+     <div class="box box-default">
+          <div class="box-header with-border">
+            <h3 class="box-title">Nombre Proyecto</h3>
+          </div>
+          <div class="box-body">
+            Aqui deberia ir la información del proyecto.
+          </div>
+          <!-- /.box-body -->
+      </div>
+      <div class="nav-tabs-custom" style="cursor: move;">
+            <!-- Tabs within a box -->
+            <ul class="nav nav-tabs pull-right ui-sortable-handle">
+              <li class="active"><a href="#revenue-chart" data-toggle="tab" aria-expanded="false">Propios</a></li>
+              <li class=""><a href="#sales-chart" data-toggle="tab" aria-expanded="true">Sugeridos</a></li>
+              <li class="pull-left header"><i class="fa fa-inbox"></i>Riesgos</li>
+            </ul>            
+            <div class="tab-content no-padding">
+              <!-- Morris chart - Sales -->
+              <div class="chart tab-pane active" id="revenue-chart" style="height: 300px; overflow:auto;">
+                <select class="js-example-basic-single" name="categorias" onchange="set_riesgo(this);"></select>
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default">+</button>
+                <div class="box-body">
+                <div class="box-body">
+
+              <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Nombre</th>
+                    <th>Causa</th>
+                    <th>Evento</th>
+                    <th>Efecto</th>
+                  </tr>
+                </thead>
+                <tbody id="body_riesgos">
+                <tr>
+                  <td><input type="checkbox" checked></td>
+                  <td></td> 
+                  <td></td>
+                  <td></td>
+                  <td></td>                
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th></th>
+                    <th>Nombre</th>
+                    <th>Causa</th>
+                    <th>Evento</th>
+                    <th>Efecto</th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>                
+              </div>
+              <div class="chart tab-pane " id="sales-chart" style="position: relative; height: 300px;"></div>
+          </div>
+          <div class="row no-print">
+        <div class="col-xs-12">    
+          <button type="button" onclick="asosiar_riesgos();" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i> Agregar
+          </button>        
+        </div>
+      </div>
+      </div>
+    </div>
+    </section>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-default" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span></button>
+        <h4 class="modal-title">Riesgo</h4>
+      </div>
+      <div class="modal-body">
+        <div class="box-body">
+        <form action="/proyecto/riesgo/insertar/" method="post">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <div class="form-group">
+                  <label >Nombre Riesgo</label>
+                  <input type="text" class="form-control" id="nombre" placeholder="Ingrese Nombre del riesgo" name="riesgo_nombre">
+                </div>
+                <div class="form-group">
+                  <label>Subcategoría a la que pertence</label>              
+                  <select class="form-control" name="sub_categoria_id" id="sub_categoria_id">    
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Causa</label>
+                  <textarea class="form-control" rows="3" placeholder="Descripción de la causa..." name="riesgo_causa"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Evento</label>
+                  <textarea class="form-control" rows="3" placeholder="Descripción del evento..." name="riesgo_evento"></textarea>
+                </div>
+              </div>
+            </div>
+            <!-- /.col -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Tipo</label>
+                <select class="form-control select2" style="width: 100%;" name="riesgo_tipo">
+                  <option selected="selected" value="0">Riesgo</option>
+                  <option value="1">Oportunidad</option>
+
+                </select>
+              </div>       
+              <div class="form-group">
+                <label>Efecto</label>
+                <textarea class="form-control" rows="3" placeholder="Descripción del efecto..." name="riesgo_efecto"></textarea>
+              </div>
+              {% if proyecto %}
+                <input type="text" name="proyecto_id" value="{{ proyecto.proyecto_id }}" hidden>
+              {% endif %}
+              <div class="box-footer">
+                <button type="submit" class="btn btn-danger pull-right">Registrar</button>
+              </div>
+            </div>
+            <!-- /.col -->
+          </div>
+          <!-- /.row -->
+        </form>
+      </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
+        <!--<button type="submit" class="btn btn-primary">Registrar</button>-->
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+{% endblock %}
+{% block organigrama_down %}
+{% load static %}
+<script src="{% static 'risk_project/dist/js/risk_ufps/risk_config.js' %}"></script>
+
+  <script type="text/javascript">
+  var data = JSON.parse("{{rbs|escapejs}}"); 
+console.log(data);
+var diccionario = {};
+
+function formatear_data(){  
+  data.forEach(function(element){
+    diccionario[element["categoria"]["categoria_id"]] = element["subcategorias"];
+  });
+}
+
+function cargarCategorias() {
+    addOptions("categorias", data);
+    addOptions("sub_categoria_id", data);
+}
+
+
+//Función para agregar opciones a un <select>.
+function addOptions(domElement, mi_array) {
+    var selector = document.getElementsByName(domElement)[0];
+    selector.innerHTML = '<option value="-1">Seleccione una Categoria...</option>'
+    for (var i = 0; i < mi_array.length; i++) {
+        var optgroup = document.createElement("optgroup");
+        optgroup.setAttribute("label", mi_array[i]["categoria"]["categoria_nombre"]);
+        for (var j = 0; j < mi_array[i]["subcategorias"].length; j++) {
+          var opcion = document.createElement("option");
+          opcion.text = mi_array[i]["subcategorias"][j]["subcategoria"]["sub_categoria_nombre"];        
+          opcion.value = mi_array[i]["subcategorias"][j]["subcategoria"]["sub_categoria_id"];
+          optgroup.appendChild(opcion);
+        }                 
+        selector.add(optgroup);
+    }
+}
+cargarCategorias();
+
+function set_riesgo(subcategoria){
+  let body_riesgos = document.getElementById('body_riesgos');
+  body_riesgos.innerHTML = "";
+  let riesgos = get_riesgos_by_sub_categoria_id(subcategoria.value);
+  let flag = false;
+  for (var i = 0; i < riesgos.length; i++) {     
+    if(!riesgos[i]["is_assigned"]){
+      let tr = document.createElement("tr");   
+      let input = document.createElement("input");
+      input.setAttribute("type", "checkbox");
+      input.setAttribute("value", riesgos[i]["riesgo_id"]);
+      let td_nombre = document.createElement("td");
+      td_nombre.appendChild(document.createTextNode(riesgos[i]["riesgo_nombre"]));
+      let td_causa = document.createElement("td");
+      td_causa.appendChild(document.createTextNode(riesgos[i]["riesgo_causa"]));
+      let td_evento = document.createElement("td");
+      td_evento.appendChild(document.createTextNode(riesgos[i]["riesgo_evento"]));
+      let td_efecto = document.createElement("td");
+      td_efecto.appendChild(document.createTextNode(riesgos[i]["riesgo_efecto"]));
+      tr.appendChild(input);
+      tr.appendChild(td_nombre);
+      tr.appendChild(td_causa);
+      tr.appendChild(td_evento);
+      tr.appendChild(td_efecto);
+      body_riesgos.appendChild(tr);
+    }       
+  }
+  /*       <tr>
+                  <td><input type="checkbox" checked></td>
+                  <td></td> 
+                  <td></td>
+                  <td></td>
+                  <td></td>                
+                </tr>
+ <tr>
+                  <th>check</th>
+                    <th>Nombre</th>
+                    <th>Causa</th>
+                    <th>Evento</th>
+                    <th>Efecto</th>
+                </tr>*/
+}
+
+function get_riesgos_by_sub_categoria_id(sub_categoria_id) {
+  for (var i = 0; i < data.length; i++) {                  
+    for (var j = 0; j < data[i]["subcategorias"].length; j++) {
+      if(data[i]["subcategorias"][j]["subcategoria"]["sub_categoria_id"] == sub_categoria_id){
+        return data[i]["subcategorias"][j]["riesgos"];
+      }      
+    }                       
+  }
+}
+
+function asosiar_riesgos(){
+  let riesgos_seleccionados = $("input[type = 'checkbox']:checked");
+  let aux = [];
+  for (var i = 0; i < riesgos_seleccionados.length; i++) {
+    aux.push(riesgos_seleccionados[i].value);
+  }
+  $.ajax({
+    type: 'POST',
+    url: "asociar_riesgo/",    
+    headers: {'X-CSRFToken': csrftoken},      
+    data: {"riesgos_seleccionados":JSON.stringify(aux)},
+    success: function(data, status, xhr) {
+      //window.location.href = "/mi_rbs/"
+       console.log(xhr);
+    },
+    error: function(jqXhr, textStatus, errorMessage) {
+      alert("ha ocurrido un error");
+      //window.location.href = "/mi_rbs/";
+      console.log(errorMessage);
+    }
+  });
+}
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,18 @@
+<table  id="plantilla_tabla_recursos" class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Nombre Recurso</th>
+      <th>Costo</th>
+      <th>Tipo Recurso</th>      
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="recurso in recursos">
+      <td><input type="checkbox"></td>
+      <td class="mailbox-name">[[recursos.recurso_nombre]]</td>
+      <td class="mailbox-subject">[[recurso.recurso_costo]]</td>
+      <td class="mailbox-date">[recurso.tipo_recurso_nombre]]</td>      
+    </tr>
+  </tbody>
+</table>
